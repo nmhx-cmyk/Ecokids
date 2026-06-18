@@ -95,7 +95,7 @@ jobs:
         run: pnpm build
 
       - name: Seed database
-        run: pnpm db:seed
+        run: pnpm exec tsx prisma/seed.ts
 
       - name: Start Next.js
         run: pnpm start &

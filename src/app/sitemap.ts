@@ -17,6 +17,8 @@ const STATIC_PATHS = [
   "/policy/terms",
 ] as const;
 
+export const dynamic = "force-dynamic";
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 

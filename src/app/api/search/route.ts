@@ -30,6 +30,8 @@ const DEFAULT_LIMIT = 6;
 const MAX_LIMIT = 24;
 const MIN_QUERY_LENGTH = 2;
 
+export const dynamic = "force-dynamic";
+
 function toNumber(value: Prisma.Decimal | number | null): number | null {
   if (value === null || value === undefined) return null;
   if (typeof value === "number") return value;

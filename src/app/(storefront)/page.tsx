@@ -9,6 +9,8 @@ import {
   getNewArrivals,
 } from "@/lib/queries/storefront";
 
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
   const [featuredCategories, bestSellers, newArrivals] = await Promise.all([
     getFeaturedCategories(4),
