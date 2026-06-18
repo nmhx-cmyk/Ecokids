@@ -1,0 +1,47 @@
+# Dependencies
+node_modules
+.pnpm-store
+
+# Next.js
+.next/
+out/
+build
+
+# Production
+dist
+
+# Env files (never commit secrets)
+.env
+.env.local
+.env*.local
+
+# MCP config (contains tokens)
+.mcp.json
+
+# Testing
+coverage
+.nyc_output
+playwright-report
+test-results
+
+# IDE
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Prisma
+prisma/seed-assets/products/*.jpg
+prisma/seed-assets/products/*.png
+prisma/seed-assets/products/*.webp
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
