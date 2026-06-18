@@ -11,11 +11,11 @@ import { cn } from "@/lib/utils/cn";
 type Swatch = { name: string; className: string; hex: string; textOn?: string };
 
 const SWATCHES: Swatch[] = [
-  { name: "cream-50", className: "bg-cream-50", hex: "#FFF6EE", textOn: "text-ink-900" },
-  { name: "cream-100", className: "bg-cream-100", hex: "#FBEEDF", textOn: "text-ink-900" },
-  { name: "coral-50", className: "bg-coral-50", hex: "#FFEDE2", textOn: "text-ink-900" },
-  { name: "coral-500", className: "bg-coral-500", hex: "#FF8A5C", textOn: "text-white" },
-  { name: "coral-600", className: "bg-coral-600", hex: "#F26B3A", textOn: "text-white" },
+  { name: "cream-50", className: "bg-cream-50", hex: "#F0FDF4", textOn: "text-ink-900" },
+  { name: "cream-100", className: "bg-cream-100", hex: "#DCFCE7", textOn: "text-ink-900" },
+  { name: "coral-50", className: "bg-coral-50", hex: "#BBF7D0", textOn: "text-ink-900" },
+  { name: "coral-500", className: "bg-coral-500", hex: "#4ADE80", textOn: "text-ink-900" },
+  { name: "coral-600", className: "bg-coral-600", hex: "#15803D", textOn: "text-white" },
   { name: "mint-50", className: "bg-mint-50", hex: "#E3F5F0", textOn: "text-ink-900" },
   { name: "mint-500", className: "bg-mint-500", hex: "#4FB7A1", textOn: "text-white" },
   { name: "mint-600", className: "bg-mint-600", hex: "#3A9684", textOn: "text-white" },
@@ -269,7 +269,7 @@ export default function StyleguidePage() {
           <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-cream-100 text-ink-700">
             <User className="h-6 w-6" aria-hidden="true" />
           </div>
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-coral-500 text-sm font-semibold text-white">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-coral-600 text-sm font-semibold text-white">
             EK
           </div>
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-mint-500 text-sm font-semibold text-white">

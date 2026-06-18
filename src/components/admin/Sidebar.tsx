@@ -68,7 +68,7 @@ export function Sidebar({ user }: SidebarProps) {
           href="/admin"
           className="flex items-center gap-2 text-base font-semibold text-ink-900"
         >
-          <span className="font-display text-coral-500">Ecokids</span>
+          <span className="font-display text-coral-600">Ecokids</span>
         </Link>
         <Badge variant="coral">Admin</Badge>
       </div>

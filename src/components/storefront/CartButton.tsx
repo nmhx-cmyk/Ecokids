@@ -61,7 +61,7 @@ export function CartButton({ className }: CartButtonProps) {
           {hydrated && totalItems > 0 ? (
             <span
               aria-hidden="true"
-              className="absolute -right-1 -top-1 inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-coral-500 px-1 text-xs font-semibold text-white"
+              className="absolute -right-1 -top-1 inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-coral-600 px-1 text-xs font-semibold text-white"
             >
               {totalItems > 99 ? "99+" : totalItems}
             </span>
@@ -72,7 +72,8 @@ export function CartButton({ className }: CartButtonProps) {
       <DropdownMenuContent
         align="end"
         sideOffset={8}
-        className="max-h-[80vh] w-96 overflow-hidden p-0"
+        collisionPadding={12}
+        className="max-h-[80vh] w-[calc(100vw-1.5rem)] max-w-[420px] overflow-hidden p-0 sm:w-96"
       >
         {!hasItems ? (
           <div className="p-4">
@@ -120,14 +121,16 @@ export function CartButton({ className }: CartButtonProps) {
                 <Button
                   asChild
                   variant="outline"
-                  className="flex-1"
+                  size="md"
+                  className="w-full sm:flex-1"
                   onClick={() => setMiniOpen(false)}
                 >
                   <Link href="/cart">Xem giỏ hàng</Link>
                 </Button>
                 <Button
                   asChild
-                  className="flex-1"
+                  size="md"
+                  className="w-full sm:flex-1"
                   onClick={() => setMiniOpen(false)}
                 >
                   <Link href="/checkout">Thanh toán</Link>

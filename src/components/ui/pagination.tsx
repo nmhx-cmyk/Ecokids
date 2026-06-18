@@ -61,7 +61,7 @@ function PageItem({
   const classes = cn(
     "inline-flex h-9 min-w-9 items-center justify-center rounded-md px-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-coral-500 focus-visible:ring-offset-2",
     active
-      ? "bg-coral-500 text-white"
+      ? "bg-coral-500 text-ink-900"
       : "text-ink-700 hover:bg-cream-100",
     disabled && "pointer-events-none opacity-50",
   );

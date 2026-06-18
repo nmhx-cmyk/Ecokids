@@ -147,7 +147,7 @@ export function MobileDrawer({ user }: MobileDrawerProps) {
               <Link
                 href="/login"
                 onClick={close}
-                className="flex items-center justify-center gap-2 rounded-lg bg-coral-500 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-coral-600"
+                className="flex items-center justify-center gap-2 rounded-lg bg-coral-500 px-4 py-3 text-sm font-medium text-ink-900 transition-colors hover:bg-coral-600 hover:text-white"
               >
                 <LogIn className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
                 Đăng nhập

@@ -30,38 +30,47 @@ export async function Header() {
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-ink-200/60 bg-cream-50/90 backdrop-blur">
-      {/* Mobile layout */}
-      <div className="container flex h-14 items-center justify-between gap-2 lg:hidden">
-        <MobileDrawer user={drawerUser} />
-        <div className="flex-1 text-center">
-          <Logo variant="small" className="inline-flex" />
+      <div className="container flex h-14 items-center gap-2 lg:h-16 lg:gap-6">
+        {/* Left: Mobile drawer (mobile) | Logo (desktop) */}
+        <div className="flex items-center lg:flex-none">
+          <div className="lg:hidden">
+            <MobileDrawer user={drawerUser} />
+          </div>
+          <div className="hidden lg:inline-flex">
+            <Logo />
+          </div>
         </div>
-        <div className="flex items-center gap-1">
-          <SearchTrigger />
-          <CartButton />
-        </div>
-      </div>
 
-      {/* Desktop layout */}
-      <div className="container hidden h-16 items-center gap-6 lg:flex">
-        <Logo />
-        <nav aria-label="Điều hướng chính" className="flex-1">
-          <ul className="flex items-center justify-center gap-1">
-            {NAV_LINKS.map((link) => (
-              <li key={link.href}>
-                <Link
-                  href={link.href}
-                  className="inline-flex items-center rounded-lg px-3 py-2 text-sm font-medium text-ink-700 transition-colors hover:bg-cream-100 hover:text-ink-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-coral-500"
-                >
-                  {link.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
-        <div className="flex items-center gap-1">
+        {/* Center: Logo (mobile) | Nav (desktop) */}
+        <div className="flex flex-1 items-center justify-center">
+          <div className="lg:hidden">
+            <Logo variant="small" />
+          </div>
+          <nav
+            aria-label="Điều hướng chính"
+            className="hidden lg:block lg:flex-1"
+          >
+            <ul className="flex items-center justify-center gap-1">
+              {NAV_LINKS.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="inline-flex items-center rounded-lg px-3 py-2 text-sm font-medium text-ink-700 transition-colors hover:bg-cream-100 hover:text-ink-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-coral-500"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </div>
+
+        {/* Right: Actions — rendered ONCE so Radix portals don't duplicate */}
+        <div className="flex items-center gap-1 lg:flex-none">
           <SearchTrigger />
-          <UserMenu user={menuUser} />
+          <div className="hidden lg:inline-flex">
+            <UserMenu user={menuUser} />
+          </div>
           <CartButton />
         </div>
       </div>

@@ -22,7 +22,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
     return (
       <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-cream-100">
         <div
-          className="flex h-full w-full items-center justify-center font-display text-7xl font-bold text-coral-500"
+          className="flex h-full w-full items-center justify-center font-display text-7xl font-bold text-coral-600"
           aria-hidden="true"
         >
           {productName.charAt(0).toUpperCase()}

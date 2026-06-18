@@ -98,6 +98,12 @@ export function CheckoutForm({ user, savedAddresses }: CheckoutFormProps) {
   const [divisions, setDivisions] =
     useState<VnDivisionsValue>(EMPTY_DIVISIONS);
 
+  const initialItems = useMemo(
+    () => items.map((it) => ({ variantId: it.variantId, quantity: it.quantity })),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
+
   const {
     register,
     handleSubmit,
@@ -108,7 +114,7 @@ export function CheckoutForm({ user, savedAddresses }: CheckoutFormProps) {
   } = useForm<PlaceOrderInput>({
     resolver: zodResolver(placeOrderSchema),
     defaultValues: {
-      items: [],
+      items: initialItems,
       shippingAddress: {
         recipientName: defaultAddress?.recipientName ?? user.name ?? "",
         phone: defaultAddress?.phone
@@ -179,6 +185,15 @@ export function CheckoutForm({ user, savedAddresses }: CheckoutFormProps) {
     }
   }, [hydrated, items.length, router]);
 
+  // Keep form's `items` field in sync with cart store so Zod min(1) validation passes
+  useEffect(() => {
+    setValue(
+      "items",
+      items.map((it) => ({ variantId: it.variantId, quantity: it.quantity })),
+      { shouldValidate: false },
+    );
+  }, [items, setValue]);
+
   if (!hydrated) {
     return <CheckoutSkeleton />;
   }
@@ -238,12 +253,28 @@ export function CheckoutForm({ user, savedAddresses }: CheckoutFormProps) {
     });
   }
 
+  function onInvalid(errs: typeof errors) {
+    // Surface the first validation error to the user instead of silently blocking.
+    const first =
+      errs.shippingAddress?.recipientName?.message ??
+      errs.shippingAddress?.phone?.message ??
+      errs.shippingAddress?.province?.message ??
+      errs.shippingAddress?.district?.message ??
+      errs.shippingAddress?.ward?.message ??
+      errs.shippingAddress?.addressLine?.message ??
+      errs.items?.message ??
+      errs.paymentMethod?.message ??
+      "Vui lòng kiểm tra lại các trường thông tin";
+    toast.error(first);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
   const shippingAddressErrors = errors.shippingAddress;
   const isNewAddress = selectedAddressId === null;
 
   return (
     <form
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit(onSubmit, onInvalid)}
       className="grid gap-6 lg:grid-cols-3"
       noValidate
     >

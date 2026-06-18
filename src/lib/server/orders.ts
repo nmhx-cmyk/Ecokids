@@ -27,7 +27,7 @@ import {
 
 const MAX_PLACE_ORDER_RETRIES = 3;
 
-export function padOrderCodeSeq(seq: bigint): string {
+function padOrderCodeSeq(seq: bigint): string {
   return String(seq).padStart(6, "0");
 }
 

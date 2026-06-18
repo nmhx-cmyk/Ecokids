@@ -1,6 +1,7 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { Button } from "@/components/ui";
 import { useCartStore } from "@/stores/cart-store";
 import type {
@@ -12,6 +13,7 @@ export interface BuyNowButtonProps {
   variant: SelectedVariant;
   product: AddToCartProduct;
   quantity: number;
+  isLoggedIn: boolean;
   disabled?: boolean;
   className?: string;
 }
@@ -20,13 +22,30 @@ export function BuyNowButton({
   variant,
   product,
   quantity,
+  isLoggedIn,
   disabled,
   className,
 }: BuyNowButtonProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const addItem = useCartStore((s) => s.addItem);
 
   function handleClick() {
+    if (!isLoggedIn) {
+      const redirectTo = encodeURIComponent(pathname ?? "/");
+      toast("Vui lòng đăng nhập để mua hàng", {
+        description: "Bạn cần đăng nhập để tiếp tục đặt hàng.",
+        duration: 2000,
+        action: {
+          label: "Đăng nhập ngay",
+          onClick: () => {
+            window.location.href = `/login?redirectTo=${redirectTo}`;
+          },
+        },
+      });
+      return;
+    }
+
     addItem({
       variantId: variant.id,
       productId: product.id,

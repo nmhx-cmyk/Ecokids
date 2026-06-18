@@ -87,7 +87,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
           />
         ) : (
           <div
-            className="flex h-full w-full items-center justify-center font-display text-6xl font-bold text-coral-500"
+            className="flex h-full w-full items-center justify-center font-display text-6xl font-bold text-coral-600"
             aria-hidden="true"
           >
             {name.charAt(0).toUpperCase()}

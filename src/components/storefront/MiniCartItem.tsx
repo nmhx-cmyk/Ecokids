@@ -31,10 +31,21 @@ export function MiniCartItem({ item }: MiniCartItemProps) {
         ) : null}
       </div>
 
-      <div className="flex flex-1 flex-col gap-1">
-        <p className="line-clamp-2 text-sm font-medium text-ink-900">
-          {item.productName}
-        </p>
+      <div className="flex min-w-0 flex-1 flex-col gap-1">
+        <div className="flex items-start justify-between gap-2">
+          <p className="line-clamp-2 text-sm font-medium text-ink-900">
+            {item.productName}
+          </p>
+          <button
+            type="button"
+            aria-label={`Xoá ${item.productName} khỏi giỏ`}
+            onClick={() => removeItem(item.variantId)}
+            className="-mr-1 -mt-1 shrink-0 rounded-md p-1 text-ink-500 transition-colors hover:bg-cream-100 hover:text-ink-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-coral-500"
+          >
+            <X className="h-4 w-4" aria-hidden="true" />
+          </button>
+        </div>
+
         <p className="text-xs text-ink-500">
           {item.size}
           {item.sizeNote ? ` (${item.sizeNote})` : ""} · {item.color}
@@ -48,11 +59,11 @@ export function MiniCartItem({ item }: MiniCartItemProps) {
               onClick={() => updateQuantity(item.variantId, item.quantity - 1)}
               disabled={!canDecrease}
               className={cn(
-                "inline-flex h-7 w-7 items-center justify-center text-ink-700 transition-colors hover:bg-cream-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-coral-500",
+                "inline-flex h-8 w-8 items-center justify-center text-ink-700 transition-colors hover:bg-cream-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-coral-500",
                 "disabled:cursor-not-allowed disabled:opacity-50",
               )}
             >
-              <Minus className="h-3 w-3" aria-hidden="true" />
+              <Minus className="h-3.5 w-3.5" aria-hidden="true" />
             </button>
             <span
               className="min-w-[2rem] text-center text-sm font-medium text-ink-900"
@@ -66,27 +77,18 @@ export function MiniCartItem({ item }: MiniCartItemProps) {
               onClick={() => updateQuantity(item.variantId, item.quantity + 1)}
               disabled={!canIncrease}
               className={cn(
-                "inline-flex h-7 w-7 items-center justify-center text-ink-700 transition-colors hover:bg-cream-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-coral-500",
+                "inline-flex h-8 w-8 items-center justify-center text-ink-700 transition-colors hover:bg-cream-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-coral-500",
                 "disabled:cursor-not-allowed disabled:opacity-50",
               )}
             >
-              <Plus className="h-3 w-3" aria-hidden="true" />
+              <Plus className="h-3.5 w-3.5" aria-hidden="true" />
             </button>
           </div>
-          <span className="text-sm font-medium text-ink-900">
+          <span className="text-sm font-semibold text-ink-900">
             {formatVnd(item.unitPrice * item.quantity)}
           </span>
         </div>
       </div>
-
-      <button
-        type="button"
-        aria-label={`Xoá ${item.productName} khỏi giỏ`}
-        onClick={() => removeItem(item.variantId)}
-        className="self-start rounded-md p-1 text-ink-500 transition-colors hover:bg-cream-100 hover:text-ink-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-coral-500"
-      >
-        <X className="h-4 w-4" aria-hidden="true" />
-      </button>
     </div>
   );
 }

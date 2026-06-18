@@ -1,6 +1,8 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { ShoppingCart } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui";
 import { useCartStore } from "@/stores/cart-store";
 
@@ -27,6 +29,7 @@ export interface AddToCartButtonProps {
   variant: SelectedVariant;
   product: AddToCartProduct;
   quantity: number;
+  isLoggedIn: boolean;
   disabled?: boolean;
   className?: string;
 }
@@ -35,13 +38,30 @@ export function AddToCartButton({
   variant,
   product,
   quantity,
+  isLoggedIn,
   disabled,
   className,
 }: AddToCartButtonProps) {
+  const pathname = usePathname();
   const addItem = useCartStore((s) => s.addItem);
   const setMiniOpen = useCartStore((s) => s.setMiniOpen);
 
   function handleClick() {
+    if (!isLoggedIn) {
+      const redirectTo = encodeURIComponent(pathname ?? "/");
+      toast("Vui lòng đăng nhập để mua hàng", {
+        description: "Bạn cần đăng nhập để thêm sản phẩm vào giỏ.",
+        duration: 2000,
+        action: {
+          label: "Đăng nhập ngay",
+          onClick: () => {
+            window.location.href = `/login?redirectTo=${redirectTo}`;
+          },
+        },
+      });
+      return;
+    }
+
     addItem({
       variantId: variant.id,
       productId: product.id,

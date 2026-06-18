@@ -17,6 +17,7 @@ import {
   getProductDetailBySlug,
   getRelatedProducts,
 } from "@/lib/queries/product-detail";
+import { getCurrentUser } from "@/lib/server/user-actions";
 
 const APP_URL =
   process.env.NEXT_PUBLIC_APP_URL ??
@@ -74,12 +75,16 @@ export async function generateMetadata({
 }
 
 export default async function ProductDetailPage({ params }: PageProps) {
-  const product = await getProductDetailBySlug(params.slug);
+  const [product, user] = await Promise.all([
+    getProductDetailBySlug(params.slug),
+    getCurrentUser(),
+  ]);
   if (!product) {
     notFound();
   }
 
   const related = await getRelatedProducts(product.id, product.category.id, 4);
+  const isLoggedIn = user !== null;
 
   return (
     <div className="container max-w-7xl py-8">
@@ -176,6 +181,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
               stock: v.stock,
             })),
           }}
+          isLoggedIn={isLoggedIn}
         />
       </div>
 

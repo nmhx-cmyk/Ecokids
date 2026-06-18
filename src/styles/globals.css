@@ -4,11 +4,11 @@
 
 @layer base {
   :root {
-    --color-cream-50: #fff6ee;
-    --color-cream-100: #fbeedf;
-    --color-coral-50: #ffede2;
-    --color-coral-500: #ff8a5c;
-    --color-coral-600: #f26b3a;
+    --color-cream-50: #f0fdf4;
+    --color-cream-100: #dcfce7;
+    --color-coral-50: #bbf7d0;
+    --color-coral-500: #4ade80;
+    --color-coral-600: #15803d;
     --color-mint-50: #e3f5f0;
     --color-mint-500: #4fb7a1;
     --color-mint-600: #3a9684;
@@ -42,7 +42,7 @@
 @layer utilities {
   /* Skip link — hidden until keyboard focus */
   .skip-link {
-    @apply sr-only fixed left-4 top-4 z-50 rounded-lg bg-coral-500 px-4 py-2 text-sm font-medium text-white shadow-md;
+    @apply sr-only fixed left-4 top-4 z-50 rounded-lg bg-coral-600 px-4 py-2 text-sm font-medium text-white shadow-md;
   }
   .skip-link:focus,
   .skip-link:focus-visible {

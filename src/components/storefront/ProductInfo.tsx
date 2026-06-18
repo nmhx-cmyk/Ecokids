@@ -49,11 +49,12 @@ export interface ProductInfoData {
 
 export interface ProductInfoProps {
   product: ProductInfoData;
+  isLoggedIn: boolean;
 }
 
 const SHORT_DESCRIPTION_THRESHOLD = 200;
 
-export function ProductInfo({ product }: ProductInfoProps) {
+export function ProductInfo({ product, isLoggedIn }: ProductInfoProps) {
   const { variants } = product;
 
   const uniqueSizes = React.useMemo(() => {
@@ -227,7 +228,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
             <button
               type="button"
               onClick={() => setDescriptionExpanded((v) => !v)}
-              className="mt-1 text-xs font-medium text-coral-600 hover:text-coral-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-coral-500"
+              className="mt-1 text-xs font-medium text-coral-600 hover:text-coral-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-coral-500"
             >
               {descriptionExpanded ? "Thu gọn" : "Xem thêm"}
             </button>
@@ -253,7 +254,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
               trigger={
                 <button
                   type="button"
-                  className="inline-flex items-center gap-1 text-xs font-medium text-coral-600 hover:text-coral-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-coral-500"
+                  className="inline-flex items-center gap-1 text-xs font-medium text-coral-600 hover:text-coral-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-coral-500"
                 >
                   <Ruler className="h-3.5 w-3.5" aria-hidden="true" />
                   Bảng quy đổi size
@@ -392,6 +393,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
               variant={selectedVariant}
               product={addToCartProduct}
               quantity={quantity}
+              isLoggedIn={isLoggedIn}
               disabled={showAddDisabled}
               className="w-full sm:flex-1"
             />
@@ -399,6 +401,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
               variant={selectedVariant}
               product={addToCartProduct}
               quantity={quantity}
+              isLoggedIn={isLoggedIn}
               disabled={showAddDisabled}
               className="w-full sm:flex-1"
             />
@@ -408,7 +411,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
             <button
               type="button"
               disabled
-              className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-coral-500 px-6 text-base font-medium text-white opacity-50 sm:flex-1"
+              className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-coral-500 px-6 text-base font-medium text-ink-900 opacity-50 sm:flex-1"
             >
               Thêm vào giỏ
             </button>

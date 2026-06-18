@@ -63,7 +63,7 @@ export function OrderStatusTimeline({ status }: OrderStatusTimelineProps) {
                 className={cn(
                   "z-10 inline-flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border-2 transition-colors lg:mx-auto",
                   isCompleted &&
-                    "border-coral-500 bg-coral-500 text-white",
+                    "border-coral-600 bg-coral-600 text-white",
                   isCurrent && "border-coral-500 bg-coral-50 text-coral-600",
                   !isCompleted &&
                     !isCurrent &&

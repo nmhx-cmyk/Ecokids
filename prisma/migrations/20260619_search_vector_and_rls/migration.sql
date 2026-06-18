@@ -5,10 +5,17 @@
 CREATE EXTENSION IF NOT EXISTS unaccent;
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
+-- Postgres unaccent() is STABLE, but generated columns require IMMUTABLE.
+-- Wrap with an explicit dictionary reference + IMMUTABLE marker.
+CREATE OR REPLACE FUNCTION public.immutable_unaccent(text)
+RETURNS text AS $$
+  SELECT public.unaccent('public.unaccent', $1);
+$$ LANGUAGE SQL IMMUTABLE STRICT PARALLEL SAFE;
+
 ALTER TABLE "Product" ADD COLUMN IF NOT EXISTS "searchVector" tsvector
   GENERATED ALWAYS AS (
-    setweight(to_tsvector('simple', unaccent(coalesce(name,''))), 'A') ||
-    setweight(to_tsvector('simple', unaccent(coalesce(description,''))), 'C')
+    setweight(to_tsvector('simple', public.immutable_unaccent(coalesce(name,''))), 'A') ||
+    setweight(to_tsvector('simple', public.immutable_unaccent(coalesce(description,''))), 'C')
   ) STORED;
 
 CREATE INDEX IF NOT EXISTS "Product_searchVector_idx"

@@ -18,13 +18,15 @@ const config: Config = {
     extend: {
       colors: {
         cream: {
-          50: "#FFF6EE",
-          100: "#FBEEDF",
+          50: "#F0FDF4",
+          100: "#DCFCE7",
         },
+        // Primary palette — fresh emerald-leaning green (hue 142°, not yellow-tinted).
+        // Token name "coral" kept for backwards-compat across components.
         coral: {
-          50: "#FFEDE2",
-          500: "#FF8A5C",
-          600: "#F26B3A",
+          50: "#BBF7D0",
+          500: "#4ADE80",
+          600: "#15803D",
         },
         mint: {
           50: "#E3F5F0",

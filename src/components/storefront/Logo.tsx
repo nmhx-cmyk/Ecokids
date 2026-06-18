@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Sparkles } from "lucide-react";
+import { Leaf } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
 interface LogoProps {
@@ -22,11 +22,11 @@ export function Logo({ variant = "default", className }: LogoProps) {
     >
       <span
         className={cn(
-          "inline-flex items-center justify-center rounded-full bg-coral-50 text-coral-500",
+          "inline-flex items-center justify-center rounded-full bg-coral-50 text-coral-600",
           isSmall ? "h-7 w-7" : "h-9 w-9",
         )}
       >
-        <Sparkles
+        <Leaf
           className={isSmall ? "h-4 w-4" : "h-5 w-5"}
           strokeWidth={1.5}
           aria-hidden="true"

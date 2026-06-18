@@ -116,7 +116,7 @@ export default async function HomePage() {
             </div>
             <Link
               href="/products"
-              className="text-sm font-medium text-coral-600 hover:text-coral-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-coral-500"
+              className="text-sm font-medium text-coral-600 hover:text-coral-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-coral-500"
             >
               Xem tất cả →
             </Link>
@@ -131,7 +131,7 @@ export default async function HomePage() {
 
       {/* Section 4 — Sale Banner */}
       <section className="container my-12">
-        <div className="grid items-center gap-6 rounded-3xl bg-coral-500 px-6 py-8 text-white lg:grid-cols-2 lg:px-12 lg:py-12">
+        <div className="grid items-center gap-6 rounded-3xl bg-coral-600 px-6 py-8 text-white lg:grid-cols-2 lg:px-12 lg:py-12">
           <div>
             <h2 className="font-display text-2xl font-bold sm:text-3xl">
               Ưu đãi đặc biệt
@@ -210,7 +210,7 @@ function TrustItem({
 }) {
   return (
     <div className="flex flex-col items-center gap-3 text-center lg:flex-row lg:text-left">
-      <div className="text-coral-500" aria-hidden="true">
+      <div className="text-coral-600" aria-hidden="true">
         {icon}
       </div>
       <div>
