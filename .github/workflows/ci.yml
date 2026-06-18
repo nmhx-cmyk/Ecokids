@@ -56,6 +56,28 @@ jobs:
       - name: Run Vitest
         run: pnpm test
 
+  e2e-gate:
+    name: E2E gate
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    outputs:
+      run_e2e: ${{ steps.check.outputs.run_e2e }}
+    steps:
+      - name: Check required secrets
+        id: check
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+        run: |
+          if [ -n "$DATABASE_URL" ] && [ -n "$NEXT_PUBLIC_SUPABASE_URL" ] && [ -n "$ADMIN_EMAIL" ]; then
+            echo "run_e2e=true" >> "$GITHUB_OUTPUT"
+            echo "E2E secrets detected — will run smoke tests."
+          else
+            echo "run_e2e=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::E2E skipped — configure DATABASE_URL, NEXT_PUBLIC_SUPABASE_URL, ADMIN_EMAIL, and related repository secrets to run smoke tests."
+          fi
+
   e2e:
     name: E2E smoke (Playwright)
     runs-on: ubuntu-latest
@@ -64,8 +86,8 @@ jobs:
     #   DATABASE_URL, NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY,
     #   SUPABASE_SERVICE_ROLE_KEY, TEST_USER_EMAIL, TEST_USER_PASSWORD,
     #   ADMIN_EMAIL, ADMIN_PASSWORD.
-    if: github.event_name == 'push'
-    needs: [lint-and-typecheck, test]
+    needs: [lint-and-typecheck, test, e2e-gate]
+    if: needs.e2e-gate.outputs.run_e2e == 'true'
     env:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
@@ -75,6 +97,10 @@ jobs:
       TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
       ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
       ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+      SEED_ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+      SEED_ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+      SEED_TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
+      SEED_TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
     steps:
       - uses: actions/checkout@v6
 
