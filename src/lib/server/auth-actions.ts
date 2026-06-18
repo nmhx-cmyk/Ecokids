@@ -14,6 +14,7 @@ import {
   type ServerActionResult,
 } from "@/lib/types/server-action";
 import { ERROR_CODES } from "@/lib/constants/error-codes";
+import { rateLimit } from "@/lib/rate-limit";
 
 const APP_URL =
   process.env.NEXT_PUBLIC_APP_URL ??
@@ -24,6 +25,14 @@ export async function loginAction(input: {
   email: string;
   password: string;
 }): Promise<ServerActionResult<{ userId: string }>> {
+  const rl = await rateLimit(`login:${input.email.toLowerCase()}`, 5, 60);
+  if (!rl.success) {
+    return err(
+      ERROR_CODES.CONFLICT,
+      "Bạn thử quá nhiều lần. Vui lòng đợi một phút.",
+    );
+  }
+
   const parsed = loginSchema.safeParse(input);
   if (!parsed.success) {
     const issue = parsed.error.issues[0];
@@ -57,6 +66,14 @@ export async function registerAction(input: {
   password: string;
   confirmPassword: string;
 }): Promise<ServerActionResult<{ userId: string }>> {
+  const rl = await rateLimit(`register:${input.email.toLowerCase()}`, 3, 3600);
+  if (!rl.success) {
+    return err(
+      ERROR_CODES.CONFLICT,
+      "Bạn thử quá nhiều lần. Vui lòng đợi một phút.",
+    );
+  }
+
   if (input.password !== input.confirmPassword) {
     return err(
       ERROR_CODES.VALIDATION,

@@ -25,9 +25,11 @@ interface OrderListItemProps {
 export function OrderListItem({ order }: OrderListItemProps) {
   const visibleItems = order.items.slice(0, MAX_THUMBS);
   const remaining = Math.max(0, order.items.length - MAX_THUMBS);
-  const showBankWarning =
-    order.paymentMethod === "BANK_TRANSFER" &&
-    order.paymentStatus === "UNPAID";
+  const showPaymentWarning =
+    (order.paymentMethod === "BANK_TRANSFER" ||
+      order.paymentMethod === "PAYOS") &&
+    order.paymentStatus === "UNPAID" &&
+    order.status !== "CANCELED";
 
   return (
     <Card>
@@ -46,10 +48,10 @@ export function OrderListItem({ order }: OrderListItemProps) {
       </CardHeader>
 
       <CardContent className="space-y-3">
-        {showBankWarning ? (
+        {showPaymentWarning ? (
           <div className="flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-warning">
             <AlertCircle className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
-            <span>Chờ thanh toán chuyển khoản</span>
+            <span>Chờ thanh toán</span>
           </div>
         ) : null}
 

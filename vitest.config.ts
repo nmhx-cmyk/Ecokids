@@ -13,6 +13,10 @@ export default defineConfig({
     css: false,
   },
   resolve: {
-    alias: { "@": path.resolve(__dirname, "./src") },
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+      // `server-only` is a build-time guard with no Node entry point; stub it in tests.
+      "server-only": path.resolve(__dirname, "./vitest.server-only-stub.ts"),
+    },
   },
 });

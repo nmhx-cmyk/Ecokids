@@ -12,7 +12,9 @@ import {
   CreditCard,
   MapPin,
   ShoppingBag,
+  Ticket,
   Truck,
+  X,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -38,6 +40,7 @@ import {
   SHIPPING_FEE,
 } from "@/lib/constants/shipping";
 import { placeOrder } from "@/lib/server/orders";
+import { previewVoucher } from "@/lib/server/vouchers";
 import { cn } from "@/lib/utils/cn";
 import { formatPhoneVn, formatVnd } from "@/lib/utils/format";
 import {
@@ -86,6 +89,12 @@ export function CheckoutForm({ user, savedAddresses }: CheckoutFormProps) {
   const [highlightVariantId, setHighlightVariantId] = useState<string | null>(
     null,
   );
+  const [voucherInput, setVoucherInput] = useState("");
+  const [voucherPending, setVoucherPending] = useState(false);
+  const [appliedVoucher, setAppliedVoucher] = useState<{
+    code: string;
+    discount: number;
+  } | null>(null);
 
   const defaultAddress = useMemo(
     () => savedAddresses.find((a) => a.isDefault) ?? savedAddresses[0] ?? null,
@@ -220,7 +229,27 @@ export function CheckoutForm({ user, savedAddresses }: CheckoutFormProps) {
   const subtotal = selectSubtotal({ items } as never);
   const isFreeShipping = subtotal >= FREE_SHIPPING_THRESHOLD;
   const shippingFee = isFreeShipping ? 0 : SHIPPING_FEE;
-  const total = subtotal + shippingFee;
+  const discount = appliedVoucher?.discount ?? 0;
+  const total = Math.max(0, subtotal + shippingFee - discount);
+
+  async function handleApplyVoucher() {
+    const code = voucherInput.trim();
+    if (!code) return;
+    setVoucherPending(true);
+    const result = await previewVoucher({ code, subtotal });
+    setVoucherPending(false);
+    if (!result.ok) {
+      toast.error(result.error.message);
+      return;
+    }
+    setAppliedVoucher({ code: result.data.code, discount: result.data.discount });
+    toast.success(`Đã áp dụng mã ${result.data.code}`);
+  }
+
+  function handleRemoveVoucher() {
+    setAppliedVoucher(null);
+    setVoucherInput("");
+  }
 
   function onSubmit(data: PlaceOrderInput) {
     const cartItems = items.map((it) => ({
@@ -235,12 +264,18 @@ export function CheckoutForm({ user, savedAddresses }: CheckoutFormProps) {
       ...data,
       items: cartItems,
       saveAddress: selectedAddressId === null ? data.saveAddress : false,
+      voucherCode: appliedVoucher?.code,
     };
 
     startTransition(async () => {
       const result = await placeOrder(payload);
       if (result.ok) {
         clearCart();
+        if (result.data.checkoutUrl) {
+          // PayOS: hand off to the hosted VietQR checkout page.
+          window.location.href = result.data.checkoutUrl;
+          return;
+        }
         toast.success("Đặt hàng thành công!");
         router.push(`/order-confirmation/${result.data.orderCode}`);
       } else {
@@ -441,7 +476,9 @@ export function CheckoutForm({ user, savedAddresses }: CheckoutFormProps) {
               render={({ field }) => (
                 <RadioGroup
                   value={field.value}
-                  onValueChange={(v) => field.onChange(v as PaymentMethod)}
+                  onValueChange={(v) =>
+                    field.onChange(v as "COD" | "PAYOS")
+                  }
                   className="gap-3"
                 >
                   <PaymentOption
@@ -454,21 +491,21 @@ export function CheckoutForm({ user, savedAddresses }: CheckoutFormProps) {
                     description="Trả tiền mặt cho shipper khi nhận hàng"
                   />
                   <PaymentOption
-                    value={PaymentMethod.BANK_TRANSFER}
-                    selected={field.value === PaymentMethod.BANK_TRANSFER}
+                    value={PaymentMethod.PAYOS}
+                    selected={field.value === PaymentMethod.PAYOS}
                     icon={
                       <CreditCard className="h-5 w-5" strokeWidth={1.75} />
                     }
-                    title="Chuyển khoản ngân hàng"
-                    description="Chuyển khoản trước khi giao hàng"
+                    title="Thanh toán online (PayOS)"
+                    description="Quét VietQR hoặc chuyển khoản, xác nhận tự động"
                   />
                 </RadioGroup>
               )}
             />
-            {paymentMethod === PaymentMethod.BANK_TRANSFER ? (
+            {paymentMethod === PaymentMethod.PAYOS ? (
               <div className="rounded-xl border border-mint-500/30 bg-mint-50/60 p-3 text-sm text-ink-700">
-                Sau khi đặt hàng, bạn sẽ thấy thông tin chuyển khoản. Vui lòng
-                chuyển khoản trong vòng 24h để đơn hàng được xác nhận.
+                Sau khi đặt hàng, bạn sẽ được chuyển tới trang thanh toán PayOS
+                để quét mã VietQR. Đơn hàng tự xác nhận ngay khi nhận được tiền.
               </div>
             ) : null}
           </CardContent>
@@ -510,6 +547,48 @@ export function CheckoutForm({ user, savedAddresses }: CheckoutFormProps) {
                 ))}
               </ul>
 
+              {/* Voucher */}
+              <div className="border-t border-ink-200 pt-4">
+                {appliedVoucher ? (
+                  <div className="flex items-center justify-between rounded-lg bg-mint-50 px-3 py-2 text-sm">
+                    <span className="flex items-center gap-2 font-medium text-mint-600">
+                      <Ticket className="h-4 w-4" aria-hidden="true" />
+                      {appliedVoucher.code}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={handleRemoveVoucher}
+                      className="inline-flex items-center gap-1 text-xs text-ink-500 hover:text-danger"
+                    >
+                      <X className="h-3 w-3" aria-hidden="true" /> Bỏ
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex gap-2">
+                    <Input
+                      value={voucherInput}
+                      onChange={(e) => setVoucherInput(e.target.value)}
+                      placeholder="Mã giảm giá"
+                      className="uppercase"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          void handleApplyVoucher();
+                        }
+                      }}
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      onClick={handleApplyVoucher}
+                      loading={voucherPending}
+                    >
+                      Áp dụng
+                    </Button>
+                  </div>
+                )}
+              </div>
+
               <div className="space-y-2 border-t border-ink-200 pt-4 text-sm">
                 <div className="flex items-center justify-between">
                   <span className="text-ink-700">Tạm tính</span>
@@ -517,6 +596,14 @@ export function CheckoutForm({ user, savedAddresses }: CheckoutFormProps) {
                     {formatVnd(subtotal)}
                   </span>
                 </div>
+                {discount > 0 ? (
+                  <div className="flex items-center justify-between">
+                    <span className="text-ink-700">Giảm giá</span>
+                    <span className="font-medium text-mint-600">
+                      −{formatVnd(discount)}
+                    </span>
+                  </div>
+                ) : null}
                 <div className="flex items-center justify-between">
                   <span className="text-ink-700">Phí vận chuyển</span>
                   <span className="font-medium text-ink-900">

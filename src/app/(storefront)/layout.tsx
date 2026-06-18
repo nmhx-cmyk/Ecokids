@@ -1,5 +1,6 @@
 import { Header } from "@/components/storefront/Header";
 import { Footer } from "@/components/storefront/Footer";
+import { CompareBar } from "@/components/storefront/CompareBar";
 
 export default function StorefrontLayout({
   children,
@@ -13,6 +14,7 @@ export default function StorefrontLayout({
         {children}
       </main>
       <Footer />
+      <CompareBar />
     </div>
   );
 }

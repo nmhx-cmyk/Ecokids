@@ -1,10 +1,14 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { Banknote, CheckCircle2 } from "lucide-react";
-import { PaymentMethod, PaymentStatus } from "@prisma/client";
+import { Banknote, CheckCircle2, Clock, QrCode } from "lucide-react";
 import { Badge, Button, Card, CardContent, CardHeader, CardTitle } from "@/components/ui";
 import { CopyButton } from "@/components/storefront/CopyButton";
+import {
+  PAYMENT_METHOD_LABELS,
+  PAYMENT_STATUS_BADGE,
+  PAYMENT_STATUS_LABELS,
+} from "@/lib/constants/payment";
 import { BANK_INFO } from "@/lib/constants/shipping";
 import { formatDate, formatPhoneVn, formatVnd } from "@/lib/utils/format";
 import { getOrderByCode } from "@/lib/queries/orders";
@@ -13,6 +17,7 @@ import { buildBankTransferContent } from "@/lib/utils/transfer-content";
 
 interface PageProps {
   params: { orderCode: string };
+  searchParams: { payos?: string };
 }
 
 interface ShippingAddressShape {
@@ -24,26 +29,6 @@ interface ShippingAddressShape {
   addressLine: string;
 }
 
-const PAYMENT_METHOD_LABELS: Record<PaymentMethod, string> = {
-  COD: "Thanh toán khi nhận hàng (COD)",
-  BANK_TRANSFER: "Chuyển khoản ngân hàng",
-};
-
-const PAYMENT_STATUS_LABELS: Record<PaymentStatus, string> = {
-  UNPAID: "Chưa thanh toán",
-  PAID: "Đã thanh toán",
-  REFUNDED: "Đã hoàn tiền",
-};
-
-const PAYMENT_STATUS_BADGE: Record<
-  PaymentStatus,
-  "default" | "coral" | "mint" | "danger" | "warning" | "ink"
-> = {
-  UNPAID: "warning",
-  PAID: "mint",
-  REFUNDED: "default",
-};
-
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
@@ -53,13 +38,22 @@ export async function generateMetadata({
   };
 }
 
-export default async function OrderConfirmationPage({ params }: PageProps) {
+export default async function OrderConfirmationPage({
+  params,
+  searchParams,
+}: PageProps) {
   const user = await requireUser(`/order-confirmation/${params.orderCode}`);
   const order = await getOrderByCode(params.orderCode, user.id);
 
   if (!order) {
     notFound();
   }
+
+  const payosAwaitingPayment =
+    order.paymentMethod === "PAYOS" &&
+    order.paymentStatus === "UNPAID" &&
+    order.status !== "CANCELED";
+  const payosCancelReturn = searchParams?.payos === "cancel";
 
   const address = order.shippingAddress as unknown as ShippingAddressShape;
   const formattedAddress = [
@@ -82,18 +76,34 @@ export default async function OrderConfirmationPage({ params }: PageProps) {
 
   return (
     <div className="container mx-auto max-w-3xl px-4 py-12">
-      <section className="mb-6 rounded-2xl border border-mint-200 bg-mint-50 p-6 text-center lg:p-8">
-        <CheckCircle2
-          className="mx-auto mb-3 size-12 text-mint-600"
-          aria-hidden="true"
-        />
-        <h1 className="text-2xl font-semibold text-ink-900">
-          Đặt hàng thành công!
-        </h1>
-        <p className="mt-2 text-ink-700">
-          Cảm ơn bạn đã đặt hàng. Đơn hàng của bạn đã được ghi nhận.
-        </p>
-      </section>
+      {payosAwaitingPayment ? (
+        <section className="mb-6 rounded-2xl border border-amber-200 bg-amber-50 p-6 text-center lg:p-8">
+          <Clock
+            className="mx-auto mb-3 size-12 text-warning"
+            aria-hidden="true"
+          />
+          <h1 className="text-2xl font-semibold text-ink-900">
+            Đơn hàng chờ thanh toán
+          </h1>
+          <p className="mt-2 text-ink-700">
+            Đơn của bạn đã được tạo. Vui lòng hoàn tất thanh toán PayOS để chúng
+            tôi xác nhận đơn.
+          </p>
+        </section>
+      ) : (
+        <section className="mb-6 rounded-2xl border border-mint-200 bg-mint-50 p-6 text-center lg:p-8">
+          <CheckCircle2
+            className="mx-auto mb-3 size-12 text-mint-600"
+            aria-hidden="true"
+          />
+          <h1 className="text-2xl font-semibold text-ink-900">
+            Đặt hàng thành công!
+          </h1>
+          <p className="mt-2 text-ink-700">
+            Cảm ơn bạn đã đặt hàng. Đơn hàng của bạn đã được ghi nhận.
+          </p>
+        </section>
+      )}
 
       <section className="mb-6 flex flex-col items-center gap-2 text-center sm:gap-3">
         <span className="text-xs font-medium uppercase tracking-wide text-ink-500">
@@ -109,6 +119,43 @@ export default async function OrderConfirmationPage({ params }: PageProps) {
           />
         </div>
       </section>
+
+      {payosAwaitingPayment ? (
+        <Card className="mb-6">
+          <CardHeader className="flex-row items-center gap-2">
+            <QrCode className="h-5 w-5 text-coral-600" aria-hidden="true" />
+            <CardTitle>Thanh toán online PayOS</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {payosCancelReturn ? (
+              <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-warning">
+                Bạn đã hủy thanh toán. Đơn hàng vẫn được giữ — bạn có thể thanh
+                toán lại bên dưới.
+              </div>
+            ) : null}
+            <div className="flex items-center justify-between gap-4">
+              <span className="text-sm text-ink-500">Số tiền cần thanh toán</span>
+              <span className="text-lg font-semibold text-coral-600">
+                {formatVnd(order.total)}
+              </span>
+            </div>
+            {order.paymentExpiresAt ? (
+              <p className="text-xs text-ink-500">
+                Vui lòng thanh toán trước{" "}
+                <span className="font-medium text-ink-700">
+                  {formatDate(order.paymentExpiresAt, true)}
+                </span>
+                . Sau thời gian này, đơn sẽ tự động hủy và hoàn lại hàng vào kho.
+              </p>
+            ) : null}
+            {order.paymentCheckoutUrl ? (
+              <Button asChild size="lg" className="w-full">
+                <a href={order.paymentCheckoutUrl}>Thanh toán ngay</a>
+              </Button>
+            ) : null}
+          </CardContent>
+        </Card>
+      ) : null}
 
       {showBankInfo ? (
         <Card className="mb-6">

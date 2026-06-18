@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { PackageOpen } from "lucide-react";
 import {
-  EmptyState,
   Tabs,
   TabsContent,
   TabsList,
@@ -12,11 +10,18 @@ import {
 import { ProductGallery } from "@/components/storefront/ProductGallery";
 import { ProductGrid } from "@/components/storefront/ProductGrid";
 import { ProductInfo } from "@/components/storefront/ProductInfo";
+import { ProductReviews } from "@/components/storefront/ProductReviews";
 import { ProductStructuredData } from "@/components/seo/ProductStructuredData";
 import {
   getProductDetailBySlug,
   getRelatedProducts,
 } from "@/lib/queries/product-detail";
+import {
+  getMyReviewForProduct,
+  getProductReviews,
+  getReviewSummary,
+} from "@/lib/queries/reviews";
+import { getActiveFlashForProduct } from "@/lib/queries/flash-sales";
 import { getCurrentUser } from "@/lib/server/user-actions";
 
 const APP_URL =
@@ -83,7 +88,13 @@ export default async function ProductDetailPage({ params }: PageProps) {
     notFound();
   }
 
-  const related = await getRelatedProducts(product.id, product.category.id, 4);
+  const [related, reviewSummary, reviews, myReview, flash] = await Promise.all([
+    getRelatedProducts(product.id, product.category.id, 4),
+    getReviewSummary(product.id),
+    getProductReviews(product.id),
+    user ? getMyReviewForProduct(user.id, product.id) : Promise.resolve(null),
+    getActiveFlashForProduct(product.id),
+  ]);
   const isLoggedIn = user !== null;
 
   return (
@@ -182,6 +193,11 @@ export default async function ProductDetailPage({ params }: PageProps) {
             })),
           }}
           isLoggedIn={isLoggedIn}
+          flashSale={
+            flash
+              ? { salePrice: flash.salePrice, endsAt: flash.endsAt.toISOString() }
+              : undefined
+          }
         />
       </div>
 
@@ -191,7 +207,9 @@ export default async function ProductDetailPage({ params }: PageProps) {
           <TabsList>
             <TabsTrigger value="description">Mô tả chi tiết</TabsTrigger>
             <TabsTrigger value="specs">Thông số</TabsTrigger>
-            <TabsTrigger value="reviews">Đánh giá</TabsTrigger>
+            <TabsTrigger value="reviews">
+              Đánh giá{reviewSummary.count > 0 ? ` (${reviewSummary.count})` : ""}
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="description">
@@ -217,10 +235,13 @@ export default async function ProductDetailPage({ params }: PageProps) {
           </TabsContent>
 
           <TabsContent value="reviews">
-            <EmptyState
-              icon={<PackageOpen className="h-6 w-6" strokeWidth={1.5} />}
-              title="Tính năng đánh giá sắp ra mắt"
-              description="Chúng tôi đang chuẩn bị để bạn có thể chia sẻ trải nghiệm về sản phẩm."
+            <ProductReviews
+              productId={product.id}
+              summary={reviewSummary}
+              reviews={reviews}
+              isLoggedIn={isLoggedIn}
+              myReview={myReview}
+              userId={user?.id ?? null}
             />
           </TabsContent>
         </Tabs>

@@ -2,24 +2,43 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ShieldCheck, Truck, Undo2 } from "lucide-react";
 import { Badge, Button } from "@/components/ui";
+import { BannerCarousel } from "@/components/storefront/BannerCarousel";
+import { FlashCountdown } from "@/components/storefront/FlashCountdown";
 import { ProductGrid } from "@/components/storefront/ProductGrid";
 import {
   getBestSellers,
   getFeaturedCategories,
   getNewArrivals,
 } from "@/lib/queries/storefront";
+import { getActiveBanners } from "@/lib/queries/banners";
+import {
+  getActiveFlashSaleProducts,
+  getNearestFlashSaleEnd,
+} from "@/lib/queries/flash-sales";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const [featuredCategories, bestSellers, newArrivals] = await Promise.all([
+  const [
+    featuredCategories,
+    bestSellers,
+    newArrivals,
+    banners,
+    flashProducts,
+    flashEndsAt,
+  ] = await Promise.all([
     getFeaturedCategories(4),
     getBestSellers(8),
     getNewArrivals(8),
+    getActiveBanners(),
+    getActiveFlashSaleProducts(8),
+    getNearestFlashSaleEnd(),
   ]);
 
   return (
     <>
+      <BannerCarousel banners={banners} />
+
       {/* Section 1 — Hero */}
       <section className="mx-4 mt-4 rounded-3xl bg-cream-100 px-6 py-10 sm:px-10 lg:mx-8 lg:mt-8 lg:px-16 lg:py-16">
         <div className="grid items-center gap-10 lg:grid-cols-2">
@@ -130,6 +149,31 @@ export default async function HomePage() {
           />
         </div>
       </section>
+
+      {/* Flash Sale (only when a sale is running) */}
+      {flashProducts.length > 0 ? (
+        <section className="container py-12">
+          <header className="mb-8 flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <h2 className="flex items-center gap-2 font-display text-2xl font-bold text-ink-900 sm:text-3xl">
+                ⚡ Flash Sale
+              </h2>
+              <p className="mt-1 text-sm text-ink-500">
+                Giá ưu đãi có hạn — nhanh tay kẻo lỡ!
+              </p>
+            </div>
+            {flashEndsAt ? (
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-ink-700">
+                  Kết thúc sau
+                </span>
+                <FlashCountdown endsAt={flashEndsAt.toISOString()} />
+              </div>
+            ) : null}
+          </header>
+          <ProductGrid products={flashProducts} />
+        </section>
+      ) : null}
 
       {/* Section 4 — Sale Banner */}
       <section className="container my-12">

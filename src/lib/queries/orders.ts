@@ -23,6 +23,15 @@ const orderInclude = {
       },
     },
   },
+  returnRequest: {
+    select: {
+      id: true,
+      status: true,
+      reason: true,
+      adminNote: true,
+      createdAt: true,
+    },
+  },
 } as const satisfies Prisma.OrderInclude;
 
 export type OrderWithItems = Prisma.OrderGetPayload<{

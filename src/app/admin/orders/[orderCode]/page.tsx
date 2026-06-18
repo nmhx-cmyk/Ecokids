@@ -1,13 +1,15 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ChevronLeft, Package } from "lucide-react";
+import { ChevronLeft, Package, Printer } from "lucide-react";
 import { OrderStatus, PaymentMethod, PaymentStatus } from "@prisma/client";
 
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AdminInternalNoteForm } from "@/components/admin/AdminInternalNoteForm";
 import { OrderStatusActions } from "@/components/admin/OrderStatusActions";
+import { TrackingCodeForm } from "@/components/admin/TrackingCodeForm";
 import { ORDER_STATUS_LABELS } from "@/lib/constants/order-status";
 import { getAdminOrderByCode } from "@/lib/queries/admin-orders";
 import { requireAdmin } from "@/lib/server/user-actions";
@@ -49,6 +51,7 @@ const PAYMENT_STATUS_BADGE: Record<
 const PAYMENT_METHOD_LABEL: Record<PaymentMethod, string> = {
   COD: "COD",
   BANK_TRANSFER: "Chuyển khoản",
+  PAYOS: "PayOS",
 };
 
 interface ShippingAddress {
@@ -121,6 +124,12 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
             </span>
           </div>
         </div>
+        <Button asChild variant="secondary">
+          <Link href={`/admin/orders/${order.orderCode}/label`} target="_blank">
+            <Printer className="h-4 w-4" aria-hidden="true" />
+            In phiếu giao
+          </Link>
+        </Button>
       </header>
 
       <div className="grid gap-6 lg:grid-cols-3">
@@ -253,12 +262,52 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
                     : formatVnd(order.shippingFee)}
                 </span>
               </div>
+              {order.discountTotal > 0 ? (
+                <div className="flex justify-between text-mint-600">
+                  <span>
+                    Giảm giá{order.voucherCode ? ` (${order.voucherCode})` : ""}
+                  </span>
+                  <span>−{formatVnd(order.discountTotal)}</span>
+                </div>
+              ) : null}
               <div className="mt-2 flex justify-between border-t border-ink-200 pt-3 text-base font-semibold text-ink-900">
                 <span>Tổng cộng</span>
                 <span>{formatVnd(order.total)}</span>
               </div>
             </CardContent>
           </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Mã vận đơn</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <TrackingCodeForm
+                orderCode={order.orderCode}
+                initialCode={order.trackingCode}
+              />
+            </CardContent>
+          </Card>
+
+          {order.returnRequest ? (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Yêu cầu trả hàng</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2 text-sm">
+                <Badge variant="warning">{order.returnRequest.status}</Badge>
+                <p className="whitespace-pre-wrap text-ink-700">
+                  {order.returnRequest.reason}
+                </p>
+                <Link
+                  href="/admin/returns"
+                  className="text-xs text-coral-600 hover:underline"
+                >
+                  Xử lý tại trang Trả hàng →
+                </Link>
+              </CardContent>
+            </Card>
+          ) : null}
         </div>
 
         <div className="lg:sticky lg:top-6 lg:self-start">

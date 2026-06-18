@@ -13,6 +13,7 @@ import {
   STATUS_TRANSITIONS,
 } from "@/lib/constants/order-status";
 import { prisma } from "@/lib/prisma";
+import { sendOrderStatusEmail } from "@/lib/server/emails";
 import { requireAdmin } from "@/lib/server/user-actions";
 import {
   err,
@@ -44,6 +45,8 @@ export async function updateOrderStatus(
     select: {
       id: true,
       status: true,
+      shippingAddress: true,
+      user: { select: { email: true, name: true } },
       items: { select: { variantId: true, quantity: true } },
     },
   });
@@ -103,6 +106,22 @@ export async function updateOrderStatus(
     }
 
     revalidateOrderPaths(orderCode);
+
+    // Notify the customer of the new status (env-gated; never throws).
+    const recipientName =
+      (order.shippingAddress as { recipientName?: string } | null)
+        ?.recipientName ||
+      order.user.name ||
+      "Quý khách";
+    if (order.user.email) {
+      await sendOrderStatusEmail(order.user.email, {
+        orderCode,
+        recipientName,
+        status: newStatus,
+        statusLabel: ORDER_STATUS_LABELS[newStatus],
+      });
+    }
+
     return ok(null);
   } catch (error) {
     console.error("[updateOrderStatus] failed", error);
@@ -110,6 +129,34 @@ export async function updateOrderStatus(
       ERROR_CODES.INTERNAL,
       "Không thể cập nhật trạng thái. Vui lòng thử lại.",
     );
+  }
+}
+
+export async function updateTrackingCode(
+  orderCode: string,
+  trackingCode: string,
+): Promise<ServerActionResult<null>> {
+  await requireAdmin();
+
+  if (!orderCode) {
+    return err(ERROR_CODES.VALIDATION, "Thiếu mã đơn hàng.");
+  }
+
+  const trimmed = trackingCode.trim();
+  if (trimmed.length > 100) {
+    return err(ERROR_CODES.VALIDATION, "Mã vận đơn tối đa 100 ký tự.");
+  }
+
+  try {
+    await prisma.order.update({
+      where: { orderCode },
+      data: { trackingCode: trimmed.length > 0 ? trimmed : null },
+    });
+    revalidateOrderPaths(orderCode);
+    return ok(null);
+  } catch (error) {
+    console.error("[updateTrackingCode] failed", error);
+    return err(ERROR_CODES.INTERNAL, "Không thể lưu mã vận đơn.");
   }
 }
 

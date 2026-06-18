@@ -1,4 +1,3 @@
-import { PaymentMethod } from '@prisma/client';
 import { z } from 'zod';
 
 const orderItemSchema = z.object({
@@ -27,9 +26,16 @@ const shippingAddressSchema = z.object({
 export const placeOrderSchema = z.object({
   items: z.array(orderItemSchema).min(1, 'Giỏ hàng đang trống'),
   shippingAddress: shippingAddressSchema,
-  paymentMethod: z.nativeEnum(PaymentMethod),
+  // GĐ1 checkout offers COD + PayOS only (BANK_TRANSFER kept for legacy orders).
+  paymentMethod: z.enum(['COD', 'PAYOS']),
   note: z.string().max(500).optional(),
   saveAddress: z.boolean().default(false),
+  voucherCode: z
+    .string()
+    .trim()
+    .max(30)
+    .optional()
+    .transform((v) => (v && v.trim() ? v.trim().toUpperCase() : undefined)),
 });
 
 export type PlaceOrderInput = z.infer<typeof placeOrderSchema>;

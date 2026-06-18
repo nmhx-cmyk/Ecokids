@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { MapPin, ShoppingBag, UserRound, type LucideIcon } from "lucide-react";
+import { Heart, MapPin, ShoppingBag, UserRound, type LucideIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils/cn";
 
@@ -17,6 +17,7 @@ const ACCOUNT_TABS: AccountTab[] = [
   { href: "/account", label: "Thông tin", icon: UserRound, exact: true },
   { href: "/account/addresses", label: "Địa chỉ", icon: MapPin },
   { href: "/account/orders", label: "Đơn hàng", icon: ShoppingBag },
+  { href: "/account/wishlist", label: "Yêu thích", icon: Heart },
 ];
 
 export function AccountNav() {

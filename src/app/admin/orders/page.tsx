@@ -55,6 +55,7 @@ const PAYMENT_STATUS_BADGE: Record<
 const PAYMENT_METHOD_LABEL: Record<PaymentMethod, string> = {
   COD: "COD",
   BANK_TRANSFER: "Chuyển khoản",
+  PAYOS: "PayOS",
 };
 
 function toSort(value: string | undefined): AdminOrderSort {

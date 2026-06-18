@@ -3,12 +3,19 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  BarChart3,
   FolderTree,
+  Image as ImageIcon,
   LayoutDashboard,
   LogOut,
   Package,
+  RotateCcw,
   ShoppingBag,
+  Star,
+  Ticket,
+  Users,
   Warehouse,
+  Zap,
   type LucideIcon,
 } from "lucide-react";
 
@@ -30,7 +37,14 @@ const NAV_ITEMS: NavItem[] = [
   { href: "/admin/products", label: "Sản phẩm", icon: Package },
   { href: "/admin/categories", label: "Danh mục", icon: FolderTree },
   { href: "/admin/orders", label: "Đơn hàng", icon: ShoppingBag },
+  { href: "/admin/returns", label: "Trả hàng", icon: RotateCcw },
   { href: "/admin/inventory", label: "Tồn kho", icon: Warehouse },
+  { href: "/admin/vouchers", label: "Mã giảm giá", icon: Ticket },
+  { href: "/admin/flash-sales", label: "Flash Sale", icon: Zap },
+  { href: "/admin/banners", label: "Banner", icon: ImageIcon },
+  { href: "/admin/customers", label: "Khách hàng", icon: Users },
+  { href: "/admin/reviews", label: "Đánh giá", icon: Star },
+  { href: "/admin/reports", label: "Báo cáo", icon: BarChart3 },
 ];
 
 function getInitials(name: string | null, email: string): string {

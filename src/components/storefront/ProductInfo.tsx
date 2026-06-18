@@ -16,6 +16,7 @@ import { formatVnd } from "@/lib/utils/format";
 import { SizeChartDialog } from "./SizeChartDialog";
 import { AddToCartButton } from "./AddToCartButton";
 import { BuyNowButton } from "./BuyNowButton";
+import { FlashCountdown } from "./FlashCountdown";
 
 interface VariantInfo {
   id: string;
@@ -50,11 +51,13 @@ export interface ProductInfoData {
 export interface ProductInfoProps {
   product: ProductInfoData;
   isLoggedIn: boolean;
+  /** Active flash sale for this product (ISO end time), if any. */
+  flashSale?: { salePrice: number; endsAt: string };
 }
 
 const SHORT_DESCRIPTION_THRESHOLD = 200;
 
-export function ProductInfo({ product, isLoggedIn }: ProductInfoProps) {
+export function ProductInfo({ product, isLoggedIn, flashSale }: ProductInfoProps) {
   const { variants } = product;
 
   const uniqueSizes = React.useMemo(() => {
@@ -118,13 +121,22 @@ export function ProductInfo({ product, isLoggedIn }: ProductInfoProps) {
     );
   }, [variants, selectedSize, selectedColor]);
 
-  const currentPrice = selectedVariant?.price ?? product.basePrice;
+  const regularPrice = selectedVariant?.price ?? product.basePrice;
+  // Flash sale (if running) takes priority and becomes the effective price.
+  const flashActive = flashSale !== undefined && flashSale.salePrice < regularPrice;
+  const currentPrice = flashActive ? flashSale.salePrice : regularPrice;
   const currentStock = selectedVariant?.stock ?? null;
-  const hasSale =
-    product.comparePrice !== null && product.comparePrice > currentPrice;
-  const discountPercent = hasSale && product.comparePrice
-    ? Math.round(((product.comparePrice - currentPrice) / product.comparePrice) * 100)
-    : 0;
+  // Strike-through reference: pre-flash price when on flash, else comparePrice.
+  const strikePrice = flashActive
+    ? regularPrice
+    : product.comparePrice !== null && product.comparePrice > currentPrice
+      ? product.comparePrice
+      : null;
+  const hasSale = strikePrice !== null;
+  const discountPercent =
+    hasSale && strikePrice
+      ? Math.round(((strikePrice - currentPrice) / strikePrice) * 100)
+      : 0;
 
   const selectedSizeNote = React.useMemo(() => {
     if (!selectedSize) return null;
@@ -167,9 +179,14 @@ export function ProductInfo({ product, isLoggedIn }: ProductInfoProps) {
     id: product.id,
     slug: product.slug,
     name: product.name,
-    basePrice: product.basePrice,
+    // Effective (flash-aware) price so the cart matches what placeOrder charges.
+    basePrice: currentPrice,
     primaryImageUrl: product.primaryImageUrl,
   };
+  // Variant carrying the effective unit price (flash overrides variant price).
+  const cartVariant = selectedVariant
+    ? { ...selectedVariant, price: currentPrice }
+    : null;
 
   return (
     <div className="flex flex-col gap-5">
@@ -203,15 +220,24 @@ export function ProductInfo({ product, isLoggedIn }: ProductInfoProps) {
         <span className="text-2xl font-bold text-coral-600">
           {formatVnd(currentPrice)}
         </span>
-        {hasSale && product.comparePrice ? (
+        {hasSale && strikePrice ? (
           <>
             <span className="text-base text-ink-500 line-through">
-              {formatVnd(product.comparePrice)}
+              {formatVnd(strikePrice)}
             </span>
             <Badge variant="coral">-{discountPercent}%</Badge>
           </>
         ) : null}
       </div>
+
+      {/* Flash sale countdown */}
+      {flashActive ? (
+        <div className="flex flex-wrap items-center gap-3 rounded-xl bg-coral-50 px-3 py-2">
+          <Badge variant="danger">⚡ FLASH SALE</Badge>
+          <span className="text-sm text-ink-700">Kết thúc sau</span>
+          <FlashCountdown endsAt={flashSale.endsAt} />
+        </div>
+      ) : null}
 
       {/* Short description */}
       {product.description ? (
@@ -387,10 +413,10 @@ export function ProductInfo({ product, isLoggedIn }: ProductInfoProps) {
 
       {/* CTAs */}
       <div className="flex flex-col gap-3 sm:flex-row">
-        {selectedVariant ? (
+        {cartVariant ? (
           <>
             <AddToCartButton
-              variant={selectedVariant}
+              variant={cartVariant}
               product={addToCartProduct}
               quantity={quantity}
               isLoggedIn={isLoggedIn}
@@ -398,7 +424,7 @@ export function ProductInfo({ product, isLoggedIn }: ProductInfoProps) {
               className="w-full sm:flex-1"
             />
             <BuyNowButton
-              variant={selectedVariant}
+              variant={cartVariant}
               product={addToCartProduct}
               quantity={quantity}
               isLoggedIn={isLoggedIn}

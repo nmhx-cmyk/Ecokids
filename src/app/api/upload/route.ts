@@ -55,18 +55,16 @@ export async function POST(request: Request) {
       ? pathPrefixEntry
       : undefined;
 
-  // Non-admin users may only upload avatars into their own user-id prefix.
+  // Non-admin users may only upload (a) their own avatar, or (b) review photos,
+  // each scoped to their own user-id prefix to prevent path tampering.
   if (user.role !== "ADMIN") {
-    if (bucketEntry !== "avatars") {
+    const normalized = pathPrefix?.replace(/^\/+|\/+$/g, "") ?? "";
+    const isOwnAvatar = bucketEntry === "avatars" && normalized === user.id;
+    const isOwnReview =
+      bucketEntry === "product-images" && normalized === `reviews/${user.id}`;
+    if (!isOwnAvatar && !isOwnReview) {
       return NextResponse.json(
         { ok: false, error: { code: ERROR_CODES.FORBIDDEN, message: "Bạn không có quyền tải ảnh" } },
-        { status: 403 },
-      );
-    }
-    const normalized = pathPrefix?.replace(/^\/+|\/+$/g, "") ?? "";
-    if (normalized !== user.id) {
-      return NextResponse.json(
-        { ok: false, error: { code: ERROR_CODES.FORBIDDEN, message: "Đường dẫn tải ảnh không hợp lệ" } },
         { status: 403 },
       );
     }

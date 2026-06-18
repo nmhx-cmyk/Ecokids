@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Be_Vietnam_Pro } from "next/font/google";
 import { Toaster } from "sonner";
+import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
+import { OrganizationStructuredData } from "@/components/seo/OrganizationStructuredData";
 import "@/styles/globals.css";
 
 const beVietnamPro = Be_Vietnam_Pro({
@@ -70,6 +72,8 @@ export default function RootLayout({
         </a>
         {children}
         <Toaster richColors position="top-right" />
+        <OrganizationStructuredData />
+        <GoogleAnalytics />
       </body>
     </html>
   );

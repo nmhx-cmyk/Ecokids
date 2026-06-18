@@ -67,6 +67,8 @@ export async function getRelatedProducts(
       basePrice: true,
       comparePrice: true,
       createdAt: true,
+      ratingAvg: true,
+      ratingCount: true,
       images: {
         where: { isPrimary: true },
         take: 1,

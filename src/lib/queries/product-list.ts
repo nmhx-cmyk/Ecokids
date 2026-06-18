@@ -31,6 +31,8 @@ export interface StorefrontProductListItem {
   primaryImage: { url: string; alt: string } | null;
   isNew: boolean;
   totalStock: number;
+  ratingAvg: number;
+  ratingCount: number;
 }
 
 export interface SearchProductsResult {
@@ -144,6 +146,8 @@ export async function searchProducts(
         ageRange: true,
         gender: true,
         createdAt: true,
+        ratingAvg: true,
+        ratingCount: true,
         category: { select: { slug: true, name: true } },
         images: {
           where: { isPrimary: true },
@@ -173,6 +177,8 @@ export async function searchProducts(
     primaryImage: row.images[0] ?? null,
     isNew: now - row.createdAt.getTime() < NEW_WINDOW_MS,
     totalStock: row.variants.reduce((sum, v) => sum + v.stock, 0),
+    ratingAvg: row.ratingAvg,
+    ratingCount: row.ratingCount,
   }));
 
   const totalPages = Math.max(1, Math.ceil(total / pageSize));

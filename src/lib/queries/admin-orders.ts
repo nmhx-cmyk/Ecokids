@@ -2,6 +2,7 @@ import "server-only";
 
 import {
   OrderStatus,
+  PaymentMethod,
   PaymentStatus,
   Prisma,
 } from "@prisma/client";
@@ -23,7 +24,7 @@ export interface AdminOrderListItem {
   id: string;
   orderCode: string;
   status: OrderStatus;
-  paymentMethod: "COD" | "BANK_TRANSFER";
+  paymentMethod: PaymentMethod;
   paymentStatus: PaymentStatus;
   total: number;
   createdAt: Date;
@@ -156,6 +157,15 @@ const adminOrderDetailInclude = {
           },
         },
       },
+    },
+  },
+  returnRequest: {
+    select: {
+      id: true,
+      status: true,
+      reason: true,
+      adminNote: true,
+      createdAt: true,
     },
   },
 } as const satisfies Prisma.OrderInclude;

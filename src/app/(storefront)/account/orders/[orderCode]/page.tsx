@@ -7,6 +7,7 @@ import { PaymentMethod, PaymentStatus } from "@prisma/client";
 import { BankTransferInstructions } from "@/components/account/BankTransferInstructions";
 import { CancelOrderDialog } from "@/components/account/CancelOrderDialog";
 import { OrderStatusTimeline } from "@/components/account/OrderStatusTimeline";
+import { ReturnRequestSection } from "@/components/account/ReturnRequestSection";
 import {
   Badge,
   Button,
@@ -39,6 +40,7 @@ interface ShippingAddressShape {
 const PAYMENT_METHOD_LABELS: Record<PaymentMethod, string> = {
   COD: "Thanh toán khi nhận hàng (COD)",
   BANK_TRANSFER: "Chuyển khoản ngân hàng",
+  PAYOS: "Thanh toán online (PayOS)",
 };
 
 const PAYMENT_STATUS_LABELS: Record<PaymentStatus, string> = {
@@ -86,6 +88,12 @@ export default async function OrderDetailPage({ params }: PageProps) {
   const showBankInfo =
     order.paymentMethod === "BANK_TRANSFER" &&
     order.paymentStatus === "UNPAID";
+
+  const payosAwaitingPayment =
+    order.paymentMethod === "PAYOS" &&
+    order.paymentStatus === "UNPAID" &&
+    order.status !== "CANCELED" &&
+    Boolean(order.paymentCheckoutUrl);
 
   const canCancel = order.status === "PENDING";
 
@@ -180,6 +188,14 @@ export default async function OrderDetailPage({ params }: PageProps) {
                 </p>
                 <p className="text-ink-700">{formattedAddress}</p>
               </div>
+              {order.trackingCode ? (
+                <p className="mt-3 rounded-lg bg-cream-50 px-3 py-2 text-sm text-ink-700">
+                  <span className="text-ink-500">Mã vận đơn: </span>
+                  <span className="font-mono font-medium text-ink-900">
+                    {order.trackingCode}
+                  </span>
+                </p>
+              ) : null}
               {order.note ? (
                 <p className="mt-3 rounded-lg bg-cream-50 px-3 py-2 text-sm italic text-ink-700">
                   Ghi chú: {order.note}
@@ -227,6 +243,16 @@ export default async function OrderDetailPage({ params }: PageProps) {
                     {formatVnd(order.shippingFee)}
                   </dd>
                 </div>
+                {order.discountTotal > 0 ? (
+                  <div className="flex items-center justify-between">
+                    <dt className="text-ink-500">
+                      Giảm giá{order.voucherCode ? ` (${order.voucherCode})` : ""}
+                    </dt>
+                    <dd className="text-mint-600">
+                      −{formatVnd(order.discountTotal)}
+                    </dd>
+                  </div>
+                ) : null}
                 <div className="flex items-center justify-between border-t border-ink-100 pt-2 text-base font-semibold">
                   <dt className="text-ink-900">Tổng cộng</dt>
                   <dd className="text-coral-600">{formatVnd(order.total)}</dd>
@@ -236,6 +262,31 @@ export default async function OrderDetailPage({ params }: PageProps) {
           </Card>
 
           {showBankInfo ? <BankTransferInstructions order={order} /> : null}
+
+          {payosAwaitingPayment ? (
+            <Card>
+              <CardHeader>
+                <CardTitle>Hoàn tất thanh toán</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <p className="text-sm text-ink-700">
+                  Đơn hàng đang chờ thanh toán qua PayOS
+                  {order.paymentExpiresAt
+                    ? `. Vui lòng thanh toán trước ${formatDate(order.paymentExpiresAt, true)}, nếu không đơn sẽ tự động hủy.`
+                    : "."}
+                </p>
+                <Button asChild className="w-full">
+                  <a href={order.paymentCheckoutUrl ?? "#"}>Thanh toán ngay</a>
+                </Button>
+              </CardContent>
+            </Card>
+          ) : null}
+
+          <ReturnRequestSection
+            orderCode={order.orderCode}
+            isCompleted={order.status === "COMPLETED"}
+            existingReturn={order.returnRequest}
+          />
         </div>
 
         <aside className="lg:sticky lg:top-20 lg:self-start">

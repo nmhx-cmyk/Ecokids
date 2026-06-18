@@ -76,12 +76,26 @@ Tài liệu này ghi lại các quyết định/giả định đã đưa ra tron
 
 **Đổi sau này:** Có thể thêm trạng thái `RETURN_REQUESTED` cho flow hoàn hàng.
 
-### B6. Auto-cancel đơn chưa thanh toán — KHÔNG triển khai GĐ1
-**Quyết định:** Không có cron job tự huỷ đơn quá hạn. Admin huỷ thủ công.
+### B6. Auto-cancel đơn chưa thanh toán
+**Quyết định:** Đơn **COD** không tự huỷ (admin huỷ thủ công). Đơn **PayOS** chưa thanh toán sẽ tự huỷ khi link PayOS hết hạn (mặc định 24h, env `PAYOS_EXPIRE_MINUTES`) — xem B7.
 
-**Lý do:** Tránh phụ thuộc background job ở GĐ1; volume đơn dự kiến thấp, admin xem hàng ngày.
+**Lý do:** PayOS giữ tồn kho khi tạo đơn; nếu khách không trả, cần hoàn kho tự động để tránh giữ hàng ảo. COD volume thấp, admin xem hàng ngày.
 
-**Đổi sau này:** Thêm Vercel Cron + Supabase function chạy mỗi giờ, huỷ đơn `PENDING` quá 48h.
+### B7. Thanh toán PayOS (thay chuyển khoản thủ công)
+**Quyết định:** Phương thức thanh toán ở checkout GĐ1 = **COD + PayOS**. PayOS (`@payos/node` v2) thay thế "chuyển khoản ngân hàng thủ công" (enum `BANK_TRANSFER` giữ lại cho đơn cũ, không hiển thị ở checkout).
+
+Luồng:
+1. `placeOrder` tạo đơn (`PENDING`/`UNPAID`), reserve tồn kho. Đơn PayOS được cấp `payosOrderCode` (numeric, từ sequence `payos_order_code_seq`) + `paymentExpiresAt`.
+2. Tạo payment link qua `paymentRequests.create`, lưu `paymentLinkId` + `paymentCheckoutUrl`, redirect khách sang trang PayOS (VietQR).
+3. Nếu tạo link lỗi → đơn tự huỷ + hoàn kho.
+4. Webhook `POST /api/payos/webhook` verify chữ ký HMAC, **idempotent** đánh dấu `PAID` (chỉ chuyển đơn còn `UNPAID`, kiểm tra khớp số tiền). Là nguồn sự thật duy nhất — KHÔNG tin redirect `returnUrl`.
+5. Cron `GET /api/cron/expire-payos-orders` (Vercel Cron mỗi 15') huỷ đơn PayOS hết hạn chưa trả + hoàn kho. Bảo vệ bằng `CRON_SECRET`.
+
+**Env cần thiết:** `PAYOS_CLIENT_ID`, `PAYOS_API_KEY`, `PAYOS_CHECKSUM_KEY`, `NEXT_PUBLIC_APP_URL` (cho return/cancel URL), `CRON_SECRET` (production), tuỳ chọn `PAYOS_EXPIRE_MINUTES`. Thiếu credential → checkout PayOS báo lỗi mời chọn COD; app vẫn chạy bình thường.
+
+**Lưu ý vận hành:** PayOS không có sandbox riêng — test bằng giao dịch thật số tiền nhỏ; webhook cần URL public (ngrok khi dev). Đăng ký webhook URL một lần qua `webhooks.confirm()` hoặc dashboard PayOS.
+
+**Đổi sau này:** Lưu nhiều giao dịch/đối soát chi tiết qua bảng `Payment` riêng nếu cần; thêm hoàn tiền tự động qua PayOS refund khi build flow hoàn hàng.
 
 ---
 
@@ -155,3 +169,34 @@ Tài liệu này ghi lại các quyết định/giả định đã đưa ra tron
 **Lý do:** Resend/SendGrid cần API key, template, deliverability config. Hoãn sang GĐ2.
 
 **Đổi sau này:** Tích hợp Resend, render email với React Email, gọi từ Server Action sau khi tạo đơn.
+
+---
+
+## G. GĐ2 — Tính năng mở rộng
+
+### G1. Đánh giá sản phẩm (Review) — ai được đánh giá
+**Quyết định:** Mọi user **đã đăng nhập** được phép viết 1 đánh giá / sản phẩm (unique `(userId, productId)`). Đánh giá vào trạng thái `PENDING`, admin duyệt (`APPROVED`/`REJECTED`) mới hiển thị công khai. Đánh giá được gắn cờ `isVerified = true` nếu user có đơn `COMPLETED` chứa sản phẩm đó (hiển thị badge "Đã mua hàng"). Sửa đánh giá sẽ reset về `PENDING` để duyệt lại.
+
+**Lý do:** Cho phép mọi user đánh giá giúp tính năng có dữ liệu ngay; moderation gate chặn spam thay vì khoá cứng theo lịch sử mua. Verified badge vẫn tạo niềm tin.
+
+**Kỹ thuật:** Rating tổng được **denormalize** trên `Product.ratingAvg` + `Product.ratingCount` (chỉ tính review `APPROVED`), recompute trong transaction mỗi lần đổi trạng thái/sửa/xoá. Hiển thị sao trên ProductCard + tab Đánh giá. Admin moderation tại `/admin/reviews`.
+
+**Đổi sau này:** Nếu spam tăng, đổi sang "verified-only" (chỉ user đã mua mới đánh giá) bằng cách chặn ở `createReview`.
+
+### G2. Voucher — validate + consume nguyên tử trong txn đặt hàng
+**Quyết định:** Voucher (`PERCENT`/`FIXED`, `minOrderValue`, `maxDiscount`, `usageLimit`, `perUserLimit`, cửa sổ thời gian) được validate ở `previewVoucher` (xem trước ở checkout) **và** validate lại + tăng `usageCount` + tạo `VoucherRedemption` **bên trong transaction serializable của `placeOrder`** — nguồn sự thật là server, không tin giá client. `Order.discountTotal` + `Order.voucherCode` lưu snapshot. Tiền giảm tính bằng `computeVoucherDiscount` (pure, có test).
+
+**Lý do:** Tránh lạm dụng vượt giới hạn khi đặt đơn song song; checkout chỉ là preview.
+
+### G3. Flash sale — giá ưu đãi theo thời gian, server authoritative
+**Quyết định:** `FlashSale` + `FlashSaleItem(salePrice)`. Giá hiệu lực = `effectiveUnitPrice(basePrice, variantPrice, flashPrice)` = min của giá thường và giá flash khi sale đang chạy (`isActive` + now trong cửa sổ). `placeOrder` áp giá flash khi tính tiền (authoritative). Trang chủ có section Flash Sale.
+
+**Đổi sau này:** Thêm quota/giới hạn số lượng theo flash item nếu cần giới hạn tồn kho sale.
+
+### G4. Trả hàng / hoàn tiền — mức đơn hàng (order-level)
+**Quyết định:** `ReturnRequest` 1-1 với `Order` (1 yêu cầu/đơn). Khách chỉ yêu cầu được khi đơn `COMPLETED`. Admin xử lý: `APPROVED`/`REJECTED`, và `REFUNDED` = hoàn kho (cộng lại stock + `InventoryLog`) + đặt `Order.paymentStatus = REFUNDED`. Vận chuyển vẫn admin-only; thêm `Order.trackingCode` (mã vận đơn nhập tay).
+
+**Lý do:** Item-level return phức tạp, GĐ2 chỉ cần order-level. Refund tiền là thao tác tay (PayOS refund tự động để sau).
+
+### G5. Banner trang chủ (CMS) + email + tối ưu (env-gated)
+**Quyết định:** `Banner` (title/imageUrl/linkUrl/sortOrder/isActive), admin kéo-thả sắp xếp bằng **dnd-kit**, trang chủ render banner active. Email giao dịch qua **Resend HTTP API** (fetch, không SDK), bật khi có `RESEND_API_KEY` — thiếu key thì no-op, không vỡ luồng đơn. GA4 + Upstash rate-limit + PWA manifest đều **env-gated**. Search giữ **Postgres FTS** (bỏ Algolia theo chốt của owner).
