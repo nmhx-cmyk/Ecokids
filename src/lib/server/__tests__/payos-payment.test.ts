@@ -1,19 +1,21 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const { create, findUnique, updateMany } = vi.hoisted(() => ({
+const { create, get, findFirst, findUnique, updateMany } = vi.hoisted(() => ({
   create: vi.fn(),
+  get: vi.fn(),
+  findFirst: vi.fn(),
   findUnique: vi.fn(),
   updateMany: vi.fn(),
 }));
 
 vi.mock("@/lib/payos", () => ({
   isPayosConfigured: true,
-  getPayos: () => ({ paymentRequests: { create } }),
+  getPayos: () => ({ paymentRequests: { create, get } }),
 }));
 
 vi.mock("@/lib/prisma", () => ({
   prisma: {
-    order: { findUnique, updateMany, findMany: vi.fn() },
+    order: { findFirst, findUnique, updateMany, findMany: vi.fn() },
   },
 }));
 
@@ -21,7 +23,11 @@ vi.mock("@/lib/server/emails", () => ({
   sendPayosPaidEmail: vi.fn().mockResolvedValue(true),
 }));
 
-import { createPayosCheckout, markPayosOrderPaid } from "../payos-payment";
+import {
+  createPayosCheckout,
+  markPayosOrderPaid,
+  reconcilePayosOrderFromProvider,
+} from "../payos-payment";
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -74,6 +80,82 @@ describe("markPayosOrderPaid", () => {
         data: expect.objectContaining({
           paymentStatus: "PAID",
           paymentRef: "TXN-REF",
+        }),
+      }),
+    );
+  });
+});
+
+describe("reconcilePayosOrderFromProvider", () => {
+  it("does nothing when the order is not pending PayOS payment", async () => {
+    findFirst.mockResolvedValue({
+      payosOrderCode: BigInt(7),
+      paymentStatus: "PAID",
+    });
+
+    const result = await reconcilePayosOrderFromProvider(
+      "ECO-2026-000007",
+      "user-1",
+    );
+
+    expect(result).toBeNull();
+    expect(get).not.toHaveBeenCalled();
+    expect(updateMany).not.toHaveBeenCalled();
+  });
+
+  it("does nothing when PayOS has not marked the payment as paid", async () => {
+    findFirst.mockResolvedValue({
+      payosOrderCode: BigInt(7),
+      paymentStatus: "UNPAID",
+    });
+    get.mockResolvedValue({
+      status: "PENDING",
+      amountPaid: 0,
+      transactions: [],
+    });
+
+    const result = await reconcilePayosOrderFromProvider(
+      "ECO-2026-000007",
+      "user-1",
+    );
+
+    expect(result).toBeNull();
+    expect(get).toHaveBeenCalledWith(7);
+    expect(updateMany).not.toHaveBeenCalled();
+  });
+
+  it("marks the order paid when PayOS confirms a paid payment link", async () => {
+    findFirst.mockResolvedValue({
+      payosOrderCode: BigInt(7),
+      paymentStatus: "UNPAID",
+    });
+    get.mockResolvedValue({
+      status: "PAID",
+      amountPaid: 250000,
+      transactions: [{ reference: "PAYOS-TXN-1" }],
+    });
+    findUnique.mockResolvedValue({
+      orderCode: "ECO-2026-000007",
+      total: 250000,
+      paymentStatus: "UNPAID",
+      shippingAddress: { recipientName: "Nguyen Van A" },
+      user: { email: "buyer@example.com", name: "Nguyen Van A" },
+    });
+    updateMany.mockResolvedValue({ count: 1 });
+
+    const result = await reconcilePayosOrderFromProvider(
+      "ECO-2026-000007",
+      "user-1",
+    );
+
+    expect(result).toBe("ECO-2026-000007");
+    expect(get).toHaveBeenCalledWith(7);
+    expect(updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { payosOrderCode: BigInt(7), paymentStatus: "UNPAID" },
+        data: expect.objectContaining({
+          paymentStatus: "PAID",
+          paymentRef: "PAYOS-TXN-1",
         }),
       }),
     );

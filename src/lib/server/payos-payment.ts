@@ -107,6 +107,47 @@ export async function markPayosOrderPaid(
 }
 
 /**
+ * Reconciles an order after the customer returns from PayOS. This covers local
+ * development and delayed webhook delivery: PayOS can redirect the browser back
+ * before our `/api/payos/webhook` endpoint has updated the order.
+ */
+export async function reconcilePayosOrderFromProvider(
+  orderCode: string,
+  userId?: string,
+): Promise<string | null> {
+  const order = await prisma.order.findFirst({
+    where: {
+      orderCode,
+      ...(userId ? { userId } : {}),
+      paymentMethod: "PAYOS",
+    },
+    select: {
+      payosOrderCode: true,
+      paymentStatus: true,
+    },
+  });
+
+  if (!order?.payosOrderCode) return null;
+  if (order.paymentStatus !== PaymentStatus.UNPAID) return null;
+
+  const paymentLink = await getPayos().paymentRequests.get(
+    Number(order.payosOrderCode),
+  );
+
+  if (paymentLink.status !== "PAID") return null;
+
+  const reference =
+    paymentLink.transactions.find((transaction) => transaction.reference)
+      ?.reference ?? null;
+
+  return markPayosOrderPaid(
+    order.payosOrderCode,
+    paymentLink.amountPaid,
+    reference,
+  );
+}
+
+/**
  * Cancels unpaid PayOS orders whose payment link has expired and restores
  * their reserved stock. Used by the cron sweep. Returns canceled order codes.
  */

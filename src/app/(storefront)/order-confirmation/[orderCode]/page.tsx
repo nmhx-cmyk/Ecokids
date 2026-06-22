@@ -12,12 +12,18 @@ import {
 import { BANK_INFO } from "@/lib/constants/shipping";
 import { formatDate, formatPhoneVn, formatVnd } from "@/lib/utils/format";
 import { getOrderByCode } from "@/lib/queries/orders";
+import { reconcilePayosOrderFromProvider } from "@/lib/server/payos-payment";
 import { requireUser } from "@/lib/server/user-actions";
 import { buildBankTransferContent } from "@/lib/utils/transfer-content";
 
 interface PageProps {
   params: { orderCode: string };
-  searchParams: { payos?: string };
+  searchParams: {
+    payos?: string;
+    code?: string;
+    status?: string;
+    cancel?: string;
+  };
 }
 
 interface ShippingAddressShape {
@@ -43,10 +49,35 @@ export default async function OrderConfirmationPage({
   searchParams,
 }: PageProps) {
   const user = await requireUser(`/order-confirmation/${params.orderCode}`);
-  const order = await getOrderByCode(params.orderCode, user.id);
+  let order = await getOrderByCode(params.orderCode, user.id);
 
   if (!order) {
     notFound();
+  }
+
+  const payosSuccessReturn =
+    searchParams?.payos === "return" &&
+    searchParams?.code === "00" &&
+    searchParams?.status === "PAID" &&
+    searchParams?.cancel !== "true";
+
+  if (
+    payosSuccessReturn &&
+    order.paymentMethod === "PAYOS" &&
+    order.paymentStatus === "UNPAID"
+  ) {
+    try {
+      const reconciledOrderCode = await reconcilePayosOrderFromProvider(
+        order.orderCode,
+        user.id,
+      );
+      if (reconciledOrderCode) {
+        const refreshed = await getOrderByCode(params.orderCode, user.id);
+        if (refreshed) order = refreshed;
+      }
+    } catch (error) {
+      console.error("[order-confirmation] PayOS reconciliation failed", error);
+    }
   }
 
   const payosAwaitingPayment =

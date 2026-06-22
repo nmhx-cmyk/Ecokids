@@ -1,4 +1,8 @@
+"use client";
+
 import { LogOut } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useTransition } from "react";
 
 import { Avatar } from "@/components/ui/avatar";
 import {
@@ -9,7 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown";
-import { signOutFormAction } from "@/lib/server/auth-actions";
+import { signOutAction } from "@/lib/server/auth-actions";
 
 function getInitials(name: string | null, email: string): string {
   const source = (name?.trim() || email).trim();
@@ -30,7 +34,17 @@ export interface AdminHeaderProps {
 }
 
 export function AdminHeader({ title, user }: AdminHeaderProps) {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
   const displayName = user.name?.trim() || user.email;
+
+  const handleSignOut = () => {
+    startTransition(async () => {
+      await signOutAction();
+      router.push("/login");
+      router.refresh();
+    });
+  };
 
   return (
     <header className="sticky top-0 z-10 flex h-16 items-center justify-between gap-4 border-b border-ink-200 bg-white px-4 sm:px-6">
@@ -54,17 +68,16 @@ export function AdminHeader({ title, user }: AdminHeaderProps) {
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>{displayName}</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <form action={signOutFormAction}>
-            <DropdownMenuItem asChild>
-              <button
-                type="submit"
-                className="flex w-full items-center gap-2 text-ink-700"
-              >
-                <LogOut className="h-4 w-4" aria-hidden="true" />
-                Đăng xuất
-              </button>
-            </DropdownMenuItem>
-          </form>
+          <DropdownMenuItem
+            onSelect={(event) => {
+              event.preventDefault();
+              handleSignOut();
+            }}
+            disabled={isPending}
+          >
+            <LogOut className="h-4 w-4" aria-hidden="true" />
+            {isPending ? "Đang đăng xuất..." : "Đăng xuất"}
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </header>
