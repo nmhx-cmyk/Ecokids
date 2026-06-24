@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { PaymentMethod } from "@prisma/client";
 import {
   Banknote,
   CreditCard,
@@ -80,6 +79,13 @@ const EMPTY_DIVISIONS: VnDivisionsValue = {
   ward: "",
 };
 
+type CheckoutPaymentMethod = PlaceOrderInput["paymentMethod"];
+
+const PAYMENT_METHOD = {
+  COD: "COD",
+  PAYOS: "PAYOS",
+} as const satisfies Record<CheckoutPaymentMethod, CheckoutPaymentMethod>;
+
 export function CheckoutForm({ user, savedAddresses }: CheckoutFormProps) {
   const hydrated = useHydrated();
   const router = useRouter();
@@ -139,7 +145,7 @@ export function CheckoutForm({ user, savedAddresses }: CheckoutFormProps) {
         wardCode: defaultAddress?.wardCode ?? "",
         addressLine: defaultAddress?.addressLine ?? "",
       },
-      paymentMethod: PaymentMethod.COD,
+      paymentMethod: PAYMENT_METHOD.COD,
       note: "",
       saveAddress: false,
     },
@@ -477,13 +483,13 @@ export function CheckoutForm({ user, savedAddresses }: CheckoutFormProps) {
                 <RadioGroup
                   value={field.value}
                   onValueChange={(v) =>
-                    field.onChange(v as "COD" | "PAYOS")
+                    field.onChange(v as CheckoutPaymentMethod)
                   }
                   className="gap-3"
                 >
                   <PaymentOption
-                    value={PaymentMethod.COD}
-                    selected={field.value === PaymentMethod.COD}
+                    value={PAYMENT_METHOD.COD}
+                    selected={field.value === PAYMENT_METHOD.COD}
                     icon={
                       <Banknote className="h-5 w-5" strokeWidth={1.75} />
                     }
@@ -491,8 +497,8 @@ export function CheckoutForm({ user, savedAddresses }: CheckoutFormProps) {
                     description="Trả tiền mặt cho shipper khi nhận hàng"
                   />
                   <PaymentOption
-                    value={PaymentMethod.PAYOS}
-                    selected={field.value === PaymentMethod.PAYOS}
+                    value={PAYMENT_METHOD.PAYOS}
+                    selected={field.value === PAYMENT_METHOD.PAYOS}
                     icon={
                       <CreditCard className="h-5 w-5" strokeWidth={1.75} />
                     }
@@ -502,7 +508,7 @@ export function CheckoutForm({ user, savedAddresses }: CheckoutFormProps) {
                 </RadioGroup>
               )}
             />
-            {paymentMethod === PaymentMethod.PAYOS ? (
+            {paymentMethod === PAYMENT_METHOD.PAYOS ? (
               <div className="rounded-xl border border-mint-500/30 bg-mint-50/60 p-3 text-sm text-ink-700">
                 Sau khi đặt hàng, bạn sẽ được chuyển tới trang thanh toán PayOS
                 để quét mã VietQR. Đơn hàng tự xác nhận ngay khi nhận được tiền.
@@ -703,7 +709,7 @@ function CheckoutItemRow({ item, highlighted }: CheckoutItemRowProps) {
 }
 
 interface PaymentOptionProps {
-  value: PaymentMethod;
+  value: CheckoutPaymentMethod;
   selected: boolean;
   icon: React.ReactNode;
   title: string;

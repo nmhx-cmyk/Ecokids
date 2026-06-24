@@ -1,6 +1,6 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { prisma } from '@/lib/prisma';
 import { requireAdmin } from '@/lib/server/user-actions';
 import {
@@ -84,6 +84,7 @@ export async function createCategory(
 
   revalidatePath('/admin/categories');
   revalidatePath('/');
+  revalidateTag('categories');
   return ok({ id: created.id });
 }
 
@@ -166,6 +167,7 @@ export async function updateCategory(
   revalidatePath('/admin/categories');
   revalidatePath(`/admin/categories/${id}/edit`);
   revalidatePath('/');
+  revalidateTag('categories');
   return ok({ id });
 }
 
@@ -209,5 +211,6 @@ export async function deleteCategory(
 
   revalidatePath('/admin/categories');
   revalidatePath('/');
+  revalidateTag('categories');
   return ok({ id });
 }

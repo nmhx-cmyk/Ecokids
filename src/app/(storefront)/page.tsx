@@ -16,6 +16,9 @@ import {
   getNearestFlashSaleEnd,
 } from "@/lib/queries/flash-sales";
 
+// Rendered per-request (Header reads auth cookies + flash-sale data is
+// time-sensitive). The expensive product/category queries are still served
+// from unstable_cache, so each request is a cache hit, not a DB round-trip.
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
@@ -167,7 +170,7 @@ export default async function HomePage() {
                 <span className="text-sm font-medium text-ink-700">
                   Kết thúc sau
                 </span>
-                <FlashCountdown endsAt={flashEndsAt.toISOString()} />
+                <FlashCountdown endsAt={flashEndsAt} />
               </div>
             ) : null}
           </header>

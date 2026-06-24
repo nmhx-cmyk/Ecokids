@@ -7,7 +7,9 @@ const globalForPrisma = globalThis as unknown as {
 export const prisma =
   globalForPrisma.prisma ??
   new PrismaClient({
-    log: process.env.NODE_ENV === 'production' ? ['error'] : ['query', 'error'],
+    // Query logging serializes every SQL statement and inflates latency.
+    // Keep it opt-in via PRISMA_LOG=1 for debugging; default to errors only.
+    log: process.env.PRISMA_LOG === '1' ? ['query', 'error'] : ['error'],
   });
 
 if (process.env.NODE_ENV !== 'production') {

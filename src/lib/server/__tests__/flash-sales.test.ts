@@ -27,7 +27,7 @@ vi.mock("@/lib/server/user-actions", () => ({
   getCurrentUser: vi.fn(),
 }));
 
-vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
+vi.mock("next/cache", () => ({ revalidatePath: vi.fn(), revalidateTag: vi.fn() }));
 
 import { createFlashSale, deleteFlashSale } from "../flash-sales";
 

@@ -1,4 +1,5 @@
 import "server-only";
+import { unstable_cache } from "next/cache";
 import { AgeRange, Gender, Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { AGE_RANGE_LABELS } from "@/lib/constants/age-ranges";
@@ -74,9 +75,12 @@ async function resolveCategoryIds(categorySlug: string): Promise<string[]> {
   return [category.id, ...category.children.map((c) => c.id)];
 }
 
-export async function searchProducts(
-  params: SearchProductsParams = {},
-): Promise<SearchProductsResult> {
+// Cached per unique filter/sort/page combination for 60s (key includes the
+// params object). Product mutations call revalidateTag("products") to refresh.
+export const searchProducts = unstable_cache(
+  async (
+    params: SearchProductsParams = {},
+  ): Promise<SearchProductsResult> => {
   const page = Math.max(1, params.page ?? 1);
   const pageSize = Math.min(60, Math.max(1, params.pageSize ?? 24));
   const sort: StorefrontSort = params.sort ?? "new";
@@ -191,7 +195,10 @@ export async function searchProducts(
     hasNext: page < totalPages,
     hasPrev: page > 1,
   };
-}
+  },
+  ["product-search"],
+  { revalidate: 60, tags: ["products"] },
+);
 
 export interface FilterCategoryNode {
   id: string;
@@ -213,7 +220,8 @@ export interface FilterFacets {
   priceRange: { min: number; max: number };
 }
 
-export async function getFilterFacets(): Promise<FilterFacets> {
+export const getFilterFacets = unstable_cache(
+  async (): Promise<FilterFacets> => {
   const [categories, priceAgg] = await Promise.all([
     prisma.category.findMany({
       select: {
@@ -291,4 +299,7 @@ export async function getFilterFacets(): Promise<FilterFacets> {
       max: priceAgg._max.basePrice ?? 0,
     },
   };
-}
+  },
+  ["product-list-filter-facets"],
+  { revalidate: 300, tags: ["products", "categories"] },
+);

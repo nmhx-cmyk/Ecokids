@@ -16,6 +16,8 @@ import {
   type StorefrontSort,
 } from "@/lib/queries/product-list";
 
+// Rendered per-request (depends on searchParams + auth). getFilterFacets is
+// served from unstable_cache; searchProducts stays live for accurate results.
 export const dynamic = "force-dynamic";
 
 const LIST_DESCRIPTION =

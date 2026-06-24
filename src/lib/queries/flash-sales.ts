@@ -1,6 +1,11 @@
 import "server-only";
+import { unstable_cache } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import type { ProductCardData } from "@/components/storefront/ProductCard";
+
+// Flash-sale data is time-sensitive; cache briefly and refresh via tag
+// "flash-sales" on admin mutations. Short TTL bounds staleness near sale edges.
+const FLASH_REVALIDATE = 60;
 
 /** Map of productId -> lowest active flash-sale price (only currently-running sales). */
 export async function getActiveFlashPriceMap(
@@ -45,23 +50,30 @@ export async function getActiveFlashForProduct(
   return { salePrice: item.salePrice, endsAt: item.flashSale.endsAt };
 }
 
-/** Soonest end time among currently-running flash sales (for the homepage timer). */
-export async function getNearestFlashSaleEnd(): Promise<Date | null> {
-  const now = new Date();
-  const sale = await prisma.flashSale.findFirst({
-    where: { isActive: true, startsAt: { lte: now }, endsAt: { gte: now } },
-    orderBy: { endsAt: "asc" },
-    select: { endsAt: true },
-  });
-  return sale?.endsAt ?? null;
-}
+/**
+ * Soonest end time among currently-running flash sales (for the homepage timer).
+ * Returns an ISO string (not a Date) so the result is safe to store in
+ * unstable_cache, which serializes its payload.
+ */
+export const getNearestFlashSaleEnd = unstable_cache(
+  async (): Promise<string | null> => {
+    const now = new Date();
+    const sale = await prisma.flashSale.findFirst({
+      where: { isActive: true, startsAt: { lte: now }, endsAt: { gte: now } },
+      orderBy: { endsAt: "asc" },
+      select: { endsAt: true },
+    });
+    return sale?.endsAt.toISOString() ?? null;
+  },
+  ["flash-nearest-end"],
+  { revalidate: FLASH_REVALIDATE, tags: ["flash-sales"] },
+);
 
 const NEW_WINDOW_MS = 14 * 24 * 60 * 60 * 1000;
 
 /** Active flash-sale products as cards, with sale price shown as the headline price. */
-export async function getActiveFlashSaleProducts(
-  limit = 8,
-): Promise<ProductCardData[]> {
+export const getActiveFlashSaleProducts = unstable_cache(
+  async (limit = 8): Promise<ProductCardData[]> => {
   const now = new Date();
   const items = await prisma.flashSaleItem.findMany({
     where: {
@@ -107,7 +119,10 @@ export async function getActiveFlashSaleProducts(
       ratingCount: p.ratingCount,
     } satisfies ProductCardData;
   });
-}
+  },
+  ["flash-active-products"],
+  { revalidate: FLASH_REVALIDATE, tags: ["flash-sales", "products"] },
+);
 
 // ============================================
 // Admin

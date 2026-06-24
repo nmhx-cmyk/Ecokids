@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { Prisma } from "@prisma/client";
 
 import { ERROR_CODES } from "@/lib/constants/error-codes";
@@ -52,6 +52,7 @@ export async function createBanner(
 
   revalidatePath("/admin/banners");
   revalidatePath("/");
+  revalidateTag("banners");
   return ok({ id: created.id });
 }
 
@@ -88,6 +89,7 @@ export async function updateBanner(
 
   revalidatePath("/admin/banners");
   revalidatePath("/");
+  revalidateTag("banners");
   return ok({ id });
 }
 
@@ -111,6 +113,7 @@ export async function deleteBanner(
 
   revalidatePath("/admin/banners");
   revalidatePath("/");
+  revalidateTag("banners");
   return ok({ id });
 }
 
@@ -133,5 +136,6 @@ export async function reorderBanners(
 
   revalidatePath("/admin/banners");
   revalidatePath("/");
+  revalidateTag("banners");
   return ok(null);
 }

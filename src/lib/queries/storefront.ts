@@ -1,10 +1,16 @@
 import "server-only";
+import { unstable_cache } from "next/cache";
 import { Prisma, ProductStatus } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import {
   toProductCardData,
   type ProductCardData,
 } from "@/components/storefront/ProductCard";
+
+// Storefront homepage data is identical for every visitor and changes only when
+// admins edit products/categories. Cache for 5 minutes; mutations call
+// revalidateTag("products" | "categories") to refresh immediately.
+const STOREFRONT_REVALIDATE = 300;
 
 export interface FeaturedCategory {
   id: string;
@@ -40,9 +46,8 @@ function mapRows(rows: ProductCardRow[]): ProductCardData[] {
   return rows.map((row) => toProductCardData(row));
 }
 
-export async function getFeaturedCategories(
-  limit = 4,
-): Promise<FeaturedCategory[]> {
+export const getFeaturedCategories = unstable_cache(
+  async (limit = 4): Promise<FeaturedCategory[]> => {
   const rows = await prisma.category.findMany({
     where: { parentId: null },
     select: {
@@ -71,9 +76,13 @@ export async function getFeaturedCategories(
     slug: row.slug,
     imageUrl: row.imageUrl,
   }));
-}
+  },
+  ["storefront-featured-categories"],
+  { revalidate: STOREFRONT_REVALIDATE, tags: ["categories", "products"] },
+);
 
-export async function getBestSellers(limit = 8): Promise<ProductCardData[]> {
+export const getBestSellers = unstable_cache(
+  async (limit = 8): Promise<ProductCardData[]> => {
   // GĐ1: placeholder ordering by createdAt desc.
   // Sprint 5 sẽ thay bằng order theo số lượng bán thực tế.
   const rows = await prisma.product.findMany({
@@ -84,9 +93,13 @@ export async function getBestSellers(limit = 8): Promise<ProductCardData[]> {
   });
 
   return mapRows(rows);
-}
+  },
+  ["storefront-best-sellers"],
+  { revalidate: STOREFRONT_REVALIDATE, tags: ["products"] },
+);
 
-export async function getNewArrivals(limit = 8): Promise<ProductCardData[]> {
+export const getNewArrivals = unstable_cache(
+  async (limit = 8): Promise<ProductCardData[]> => {
   const rows = await prisma.product.findMany({
     where: { status: ProductStatus.ACTIVE },
     orderBy: { createdAt: "desc" },
@@ -95,9 +108,13 @@ export async function getNewArrivals(limit = 8): Promise<ProductCardData[]> {
   });
 
   return mapRows(rows);
-}
+  },
+  ["storefront-new-arrivals"],
+  { revalidate: STOREFRONT_REVALIDATE, tags: ["products"] },
+);
 
-export async function getSaleProducts(limit = 8): Promise<ProductCardData[]> {
+export const getSaleProducts = unstable_cache(
+  async (limit = 8): Promise<ProductCardData[]> => {
   const rows = await prisma.product.findMany({
     where: {
       status: ProductStatus.ACTIVE,
@@ -109,4 +126,7 @@ export async function getSaleProducts(limit = 8): Promise<ProductCardData[]> {
   });
 
   return mapRows(rows);
-}
+  },
+  ["storefront-sale-products"],
+  { revalidate: STOREFRONT_REVALIDATE, tags: ["products"] },
+);

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getCurrentUser } from "@/lib/server/user-actions";
+import { getDisplayUser } from "@/lib/server/user-actions";
 import { Logo } from "./Logo";
 import { UserMenu } from "./UserMenu";
 import { MobileDrawer } from "./MobileDrawer";
@@ -15,7 +15,7 @@ const NAV_LINKS: ReadonlyArray<{ label: string; href: string }> = [
 ];
 
 export async function Header() {
-  const user = await getCurrentUser();
+  const user = await getDisplayUser();
   const drawerUser = user
     ? { id: user.id, email: user.email, name: user.name }
     : null;

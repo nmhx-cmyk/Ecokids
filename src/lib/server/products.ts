@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { Prisma, ProductStatus } from "@prisma/client";
 import { z } from "zod";
 
@@ -184,6 +184,7 @@ export async function createProduct(
 
     revalidatePath("/admin/products");
     revalidatePath(`/products/${created.slug}`);
+    revalidateTag("products");
     return ok(created);
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
@@ -385,6 +386,7 @@ export async function updateProduct(
     revalidatePath("/admin/products");
     revalidatePath(`/admin/products/${id}/edit`);
     revalidatePath(`/products/${slug}`);
+    revalidateTag("products");
     return ok({ id, slug });
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
@@ -425,12 +427,14 @@ export async function deleteProduct(
       });
       revalidatePath("/admin/products");
       revalidatePath(`/products/${existing.slug}`);
+      revalidateTag("products");
       return ok({ archived: true });
     }
 
     await prisma.product.delete({ where: { id } });
     revalidatePath("/admin/products");
     revalidatePath(`/products/${existing.slug}`);
+    revalidateTag("products");
     return ok({ archived: false });
   } catch {
     return err(ERROR_CODES.INTERNAL, "Không thể xoá sản phẩm");
@@ -503,6 +507,7 @@ export async function duplicateProduct(
     });
 
     revalidatePath("/admin/products");
+    revalidateTag("products");
     return ok(created);
   } catch {
     return err(ERROR_CODES.INTERNAL, "Không thể nhân bản sản phẩm");

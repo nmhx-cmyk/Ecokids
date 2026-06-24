@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { Prisma } from "@prisma/client";
 
 import { ERROR_CODES } from "@/lib/constants/error-codes";
@@ -54,6 +54,7 @@ export async function createFlashSale(
 
   revalidatePath("/admin/flash-sales");
   revalidatePath("/");
+  revalidateTag("flash-sales");
   return ok({ id: created.id });
 }
 
@@ -99,6 +100,7 @@ export async function updateFlashSale(
 
   revalidatePath("/admin/flash-sales");
   revalidatePath("/");
+  revalidateTag("flash-sales");
   return ok({ id });
 }
 
@@ -122,5 +124,6 @@ export async function deleteFlashSale(
 
   revalidatePath("/admin/flash-sales");
   revalidatePath("/");
+  revalidateTag("flash-sales");
   return ok({ id });
 }
