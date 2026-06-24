@@ -11,7 +11,9 @@ export async function loginAs(
 ): Promise<void> {
   await page.goto("/login");
   await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Mật khẩu").fill(password);
+  await page
+    .getByRole("textbox", { name: "Mật khẩu", exact: true })
+    .fill(password);
   await page.getByRole("button", { name: "Đăng nhập", exact: true }).click();
   // The action shows a sonner toast on success and pushes to redirectTo.
   await expect(page).not.toHaveURL(/\/login(\?|$)/, { timeout: 10_000 });

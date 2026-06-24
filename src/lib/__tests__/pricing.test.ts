@@ -62,4 +62,20 @@ describe("computeVoucherDiscount", () => {
       ),
     ).toBe(300_000);
   });
+
+  it("keeps checkout total from going negative when a fixed voucher exceeds subtotal", () => {
+    const subtotal = 300_000;
+    const shippingFee = 30_000;
+    const discount = computeVoucherDiscount(
+      {
+        discountType: "FIXED",
+        discountValue: 500_000,
+        minOrderValue: 0,
+        maxDiscount: null,
+      },
+      subtotal,
+    );
+
+    expect(subtotal + shippingFee - discount).toBe(30_000);
+  });
 });
