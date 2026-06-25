@@ -1,0 +1,40 @@
+\begin{thebibliography}{10}
+
+\bibitem{react}
+{Meta}, ``React documentation.'' \url{https://react.dev}, 2025.
+
+\bibitem{reactjs2018}
+S.~Aggarwal, ``Modern web-development using reactjs,'' {\em International
+  Journal of Recent Research Aspects}, vol.~5, no.~1, pp.~133--137, 2018.
+
+\bibitem{nextjs}
+{Vercel}, ``Next.js documentation.'' \url{https://nextjs.org/docs}, 2025.
+
+\bibitem{typescript}
+{Microsoft}, ``Typescript documentation.''
+  \url{https://www.typescriptlang.org/docs/}, 2025.
+
+\bibitem{postgresql}
+{The PostgreSQL Global Development Group}, ``Postgresql documentation.''
+  \url{https://www.postgresql.org/docs/}, 2025.
+
+\bibitem{supabase}
+{Supabase Inc.}, ``Supabase documentation.'' \url{https://supabase.com/docs},
+  2025.
+
+\bibitem{prisma}
+{Prisma Data, Inc.}, ``Prisma orm documentation.''
+  \url{https://www.prisma.io/docs}, 2025.
+
+\bibitem{payos}
+{PayOS}, ``Payos developer documentation.'' \url{https://payos.vn/docs/}, 2025.
+
+\bibitem{tailwind}
+{Tailwind Labs}, ``Tailwind css documentation.''
+  \url{https://tailwindcss.com/docs}, 2025.
+
+\bibitem{vercel}
+{Vercel}, ``Vercel platform documentation.'' \url{https://vercel.com/docs},
+  2025.
+
+\end{thebibliography}

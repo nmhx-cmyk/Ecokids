@@ -1,0 +1,125 @@
+\chapter{Công nghệ sử dụng}
+\label{ch:tech}
+
+Chương này giới thiệu các công nghệ, nền tảng và công cụ chính được sử dụng để xây dựng hệ
+thống \brandName{}, kèm theo lý do lựa chọn của từng công nghệ trong ngữ cảnh của đề tài.
+
+\section{Next.js, React và TypeScript}
+
+\subsection{React}
+
+React là một thư viện JavaScript mã nguồn mở do Meta phát triển, dùng để xây dựng giao diện
+người dùng theo mô hình thành phần (component). Thay vì thao tác trực tiếp với DOM, React mô
+tả giao diện một cách khai báo và sử dụng cơ chế DOM ảo (Virtual DOM) để cập nhật giao diện
+một cách hiệu quả khi dữ liệu thay đổi. Cách tiếp cận theo thành phần giúp mã nguồn dễ tái sử
+dụng, dễ kiểm thử và dễ bảo trì \cite{react,reactjs2018}.
+
+\subsection{Next.js 14 với App Router}
+
+Next.js là một framework xây dựng trên nền React, cung cấp một bộ công cụ hoàn chỉnh cho việc
+phát triển ứng dụng web full-stack. Đề tài sử dụng \textbf{Next.js phiên bản 14} với mô hình
+\textit{App Router} --- mô hình định tuyến dựa trên cấu trúc thư mục, hỗ trợ nhiều cơ chế kết
+xuất trang khác nhau \cite{nextjs}:
+
+\begin{itemize}
+  \item \textbf{Server-Side Rendering (SSR):} trang được kết xuất phía máy chủ ở mỗi yêu cầu,
+  phù hợp với nội dung động và thân thiện với SEO.
+  \item \textbf{Static Site Generation (SSG):} trang được dựng sẵn tại thời điểm build, cho tốc độ
+  tải rất nhanh.
+  \item \textbf{Incremental Static Regeneration (ISR):} kết hợp ưu điểm của hai cơ chế trên, cho
+  phép tái sinh trang tĩnh theo chu kỳ hoặc theo nhãn (tag) dữ liệu.
+\end{itemize}
+
+Điểm nổi bật của App Router là \textbf{React Server Components (RSC)} và \textbf{Server
+Actions}. Với RSC, phần lớn các thành phần được kết xuất hoàn toàn trên máy chủ và không gửi
+mã JavaScript xuống trình duyệt, giúp giảm đáng kể kích thước gói tải về và cải thiện hiệu năng.
+Server Actions cho phép định nghĩa các hàm xử lý nghiệp vụ chạy trên máy chủ và gọi trực tiếp
+từ thành phần giao diện như một hàm thông thường, loại bỏ nhu cầu xây dựng nhiều endpoint API
+thủ công cho các thao tác ghi dữ liệu. Đây là lý do chính khiến Next.js được lựa chọn: nó cho phép
+xây dựng một ứng dụng full-stack thống nhất, vừa tối ưu SEO và hiệu năng --- hai yếu tố then chốt
+của một website thương mại điện tử --- vừa rút ngắn thời gian phát triển.
+
+\subsection{TypeScript}
+
+Toàn bộ mã nguồn của hệ thống được viết bằng \textbf{TypeScript} ở chế độ kiểm tra kiểu nghiêm
+ngặt (strict). TypeScript bổ sung hệ thống kiểu tĩnh cho JavaScript, giúp phát hiện sớm nhiều lỗi
+ngay trong quá trình phát triển, tăng khả năng tự gợi ý của trình soạn thảo và giúp mã nguồn dễ
+bảo trì hơn khi dự án mở rộng \cite{typescript}.
+
+\section{Prisma, PostgreSQL và Supabase}
+
+\subsection{PostgreSQL}
+
+PostgreSQL là một hệ quản trị cơ sở dữ liệu quan hệ - đối tượng mã nguồn mở, nổi bật về tính ổn
+định, tuân thủ chuẩn SQL và khả năng mở rộng. Hệ thống \brandName{} khai thác một số tính năng
+nâng cao của PostgreSQL \cite{postgresql}:
+
+\begin{itemize}
+  \item \textbf{Tìm kiếm toàn văn (Full-Text Search)} kết hợp tiện ích mở rộng \texttt{unaccent}
+  để loại bỏ dấu tiếng Việt và \texttt{pg\_trgm} để so khớp gần đúng, phục vụ chức năng tìm kiếm
+  sản phẩm.
+  \item \textbf{Row-Level Security (RLS)} để thiết lập các chính sách truy cập dữ liệu ở mức dòng,
+  tăng cường an toàn dữ liệu.
+  \item Hỗ trợ kiểu dữ liệu phong phú như \texttt{uuid}, \texttt{jsonb}, mảng (array) và kiểu liệt
+  kê (enum).
+\end{itemize}
+
+\subsection{Supabase}
+
+Supabase là một nền tảng Backend-as-a-Service xây dựng quanh PostgreSQL, cung cấp sẵn cơ sở
+dữ liệu được quản lý, dịch vụ xác thực (Authentication), lưu trữ tệp (Storage) và các API. Trong
+đề tài, Supabase đảm nhiệm vai trò hạ tầng cơ sở dữ liệu và xác thực người dùng, đồng thời cung
+cấp dịch vụ lưu trữ hình ảnh sản phẩm và ảnh đánh giá \cite{supabase}. Việc sử dụng Supabase giúp
+tập trung nguồn lực vào phát triển nghiệp vụ thay vì tự xây dựng và vận hành hạ tầng.
+
+\subsection{Prisma ORM}
+
+Prisma là một ORM (Object-Relational Mapping) hiện đại cho hệ sinh thái Node.js/TypeScript.
+Lược đồ cơ sở dữ liệu được mô tả tập trung trong tệp \texttt{schema.prisma}, từ đó Prisma sinh ra
+một thư viện truy vấn an toàn kiểu (type-safe client) \cite{prisma}. Ưu điểm khi sử dụng Prisma:
+
+\begin{itemize}
+  \item Truy vấn an toàn kiểu, hạn chế lỗi và tận dụng tối đa khả năng gợi ý của TypeScript.
+  \item Quản lý phiên bản lược đồ cơ sở dữ liệu thông qua cơ chế migration.
+  \item Hỗ trợ giao dịch (transaction) với các mức cô lập khác nhau, đặc biệt quan trọng đối với
+  các nghiệp vụ nhạy cảm như đặt hàng và trừ tồn kho.
+\end{itemize}
+
+\section{Tích hợp dịch vụ bên ngoài}
+
+\subsection{Cổng thanh toán PayOS}
+
+PayOS là một cổng thanh toán trực tuyến phổ biến tại Việt Nam, hỗ trợ thanh toán qua mã QR và
+chuyển khoản ngân hàng. Hệ thống tích hợp PayOS để tạo liên kết thanh toán cho đơn hàng, nhận
+kết quả thanh toán thông qua webhook có xác thực chữ ký HMAC, và tự động hủy các đơn hàng
+chưa thanh toán quá hạn nhằm hoàn trả tồn kho \cite{payos}.
+
+\subsection{Resend và Upstash}
+
+\textbf{Resend} là dịch vụ gửi email giao dịch qua API, được sử dụng để gửi các email thông báo
+như xác nhận đặt hàng, cập nhật trạng thái đơn hàng và xác nhận thanh toán. \textbf{Upstash
+Redis} là dịch vụ Redis serverless, được sử dụng để giới hạn tần suất truy cập (rate limiting) cho
+các thao tác nhạy cảm như đăng nhập và đăng ký, góp phần chống tấn công dò mật khẩu. Cả hai
+dịch vụ đều được tích hợp theo cơ chế ``env-gated'': nếu không cấu hình khóa API, tính năng tương
+ứng sẽ tự động bỏ qua mà không ảnh hưởng đến hoạt động chung của hệ thống.
+
+\section{Thư viện giao diện và công cụ hỗ trợ}
+
+\begin{itemize}
+  \item \textbf{Tailwind CSS:} framework CSS theo hướng utility-first, giúp xây dựng giao diện
+  nhất quán và nhanh chóng \cite{tailwind}.
+  \item \textbf{Zustand:} thư viện quản lý trạng thái phía client nhẹ, dùng cho giỏ hàng, danh sách
+  yêu thích và so sánh sản phẩm.
+  \item \textbf{React Hook Form và Zod:} quản lý biểu mẫu và kiểm tra dữ liệu đầu vào; Zod được
+  dùng để định nghĩa lược đồ kiểm tra dùng chung cho cả phía client và phía máy chủ.
+  \item \textbf{SheetJS (xlsx):} xuất báo cáo doanh thu ra tệp Excel.
+  \item \textbf{Recharts} và \textbf{dnd-kit:} lần lượt phục vụ vẽ biểu đồ báo cáo và thao tác kéo
+  thả sắp xếp banner trong trang quản trị.
+\end{itemize}
+
+\section{Nền tảng triển khai}
+
+Hệ thống được triển khai trên \textbf{Vercel} --- nền tảng được tối ưu cho ứng dụng Next.js, hỗ trợ
+triển khai liên tục (CI/CD) từ kho mã nguồn, chạy các hàm serverless và tác vụ định kỳ (cron
+job). Trong đề tài, một tác vụ cron được cấu hình để định kỳ quét và hủy các đơn hàng PayOS chưa
+thanh toán quá hạn \cite{vercel}.

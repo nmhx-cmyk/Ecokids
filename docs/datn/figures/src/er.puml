@@ -1,0 +1,130 @@
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontName "Be Vietnam Pro"
+skinparam defaultFontSize 13
+skinparam linetype ortho
+hide circle
+entity "User" as User {
+  * id : uuid <<PK>>
+  --
+  email, name, phone
+  role
+}
+entity "Address" as Address {
+  * id <<PK>>
+  --
+  userId <<FK>>
+  recipientName, phone, address
+}
+entity "Category" as Category {
+  * id <<PK>>
+  --
+  name, slug, parentId
+}
+entity "Product" as Product {
+  * id <<PK>>
+  --
+  categoryId <<FK>>
+  name, slug, basePrice
+  ratingAvg, ratingCount
+}
+entity "ProductImage" as ProductImage {
+  * id <<PK>>
+  --
+  productId <<FK>>
+  url, isPrimary
+}
+entity "ProductVariant" as Variant {
+  * id <<PK>>
+  --
+  productId <<FK>>
+  sku, size, color, stock
+}
+entity "Order" as Order {
+  * id <<PK>>
+  --
+  userId <<FK>>
+  orderCode, status
+  paymentMethod, total
+}
+entity "OrderItem" as OrderItem {
+  * id <<PK>>
+  --
+  orderId <<FK>>
+  variantId <<FK>>
+  quantity, unitPrice
+}
+entity "Review" as Review {
+  * id <<PK>>
+  --
+  productId <<FK>>
+  userId <<FK>>
+  rating, status
+}
+entity "WishlistItem" as Wishlist {
+  * id <<PK>>
+  --
+  userId <<FK>>
+  productId <<FK>>
+}
+entity "Voucher" as Voucher {
+  * id <<PK>>
+  --
+  code, discountType
+  discountValue
+}
+entity "VoucherRedemption" as VR {
+  * id <<PK>>
+  --
+  voucherId <<FK>>
+  userId <<FK>>
+  orderId <<FK>>
+}
+entity "FlashSale" as FlashSale {
+  * id <<PK>>
+  --
+  name, startsAt, endsAt
+}
+entity "FlashSaleItem" as FSI {
+  * id <<PK>>
+  --
+  flashSaleId <<FK>>
+  productId <<FK>>
+  salePrice
+}
+entity "ReturnRequest" as Return {
+  * id <<PK>>
+  --
+  orderId <<FK>>
+  userId <<FK>>
+  status
+}
+entity "InventoryLog" as InvLog {
+  * id <<PK>>
+  --
+  variantId <<FK>>
+  delta, reason
+}
+
+User ||--o{ Address
+User ||--o{ Order
+User ||--o{ Review
+User ||--o{ Wishlist
+User ||--o{ Return
+Category ||--o{ Product
+Category ||--o{ Category
+Product ||--o{ ProductImage
+Product ||--o{ Variant
+Product ||--o{ Review
+Product ||--o{ Wishlist
+Product ||--o{ FSI
+Variant ||--o{ OrderItem
+Variant ||--o{ InvLog
+Order ||--o{ OrderItem
+Order ||--o| Return
+Order ||--o| VR
+Voucher ||--o{ VR
+FlashSale ||--o{ FSI
+@enduml

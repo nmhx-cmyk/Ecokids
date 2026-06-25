@@ -1,0 +1,35 @@
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontName "Be Vietnam Pro"
+skinparam defaultFontSize 13
+start
+:Khách hàng thêm sản phẩm vào giỏ;
+:Vào trang thanh toán;
+:Nhập địa chỉ, chọn phương thức\nthanh toán, nhập mã giảm giá (nếu có);
+:Hệ thống kiểm tra tồn kho\nvà tính lại tổng tiền;
+if (Còn đủ hàng?) then (không)
+  :Thông báo hết hàng;
+  stop
+else (có)
+endif
+:Tạo đơn hàng (trạng thái Chờ xác nhận),\ntrừ tồn kho trong giao dịch;
+if (Phương thức thanh toán?) then (COD)
+  :Ghi nhận đơn COD;
+  :Gửi email xác nhận đặt hàng;
+  stop
+else (PayOS)
+  :Tạo liên kết thanh toán PayOS;
+  :Chuyển hướng tới trang thanh toán;
+  if (Thanh toán trong thời hạn?) then (có)
+    :Webhook xác nhận đã thanh toán;
+    :Cập nhật trạng thái Đã thanh toán;
+    :Gửi email xác nhận thanh toán;
+    stop
+  else (quá hạn)
+    :Tác vụ định kỳ hủy đơn,\nhoàn trả tồn kho;
+    stop
+  endif
+endif
+@enduml

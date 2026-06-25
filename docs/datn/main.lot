@@ -1,0 +1,70 @@
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {2.1}{\ignorespaces So sánh các kênh bán hàng}}{6}{table.2.1}%
+\contentsline {table}{\numberline {2.2}{\ignorespaces Danh sách use case của Khách hàng}}{15}{table.2.2}%
+\contentsline {table}{\numberline {2.3}{\ignorespaces Danh sách use case của Quản trị viên}}{15}{table.2.3}%
+\contentsline {table}{\numberline {2.4}{\ignorespaces Đặc tả use case ``Đăng ký''}}{16}{table.2.4}%
+\contentsline {table}{\numberline {2.5}{\ignorespaces Dữ liệu đầu vào use case ``Đăng ký''}}{17}{table.2.5}%
+\contentsline {table}{\numberline {2.6}{\ignorespaces Đặc tả use case ``Đăng nhập''}}{17}{table.2.6}%
+\contentsline {table}{\numberline {2.7}{\ignorespaces Đặc tả use case ``Tìm kiếm sản phẩm''}}{18}{table.2.7}%
+\contentsline {table}{\numberline {2.8}{\ignorespaces Đặc tả use case ``Lọc danh sách sản phẩm''}}{18}{table.2.8}%
+\contentsline {table}{\numberline {2.9}{\ignorespaces Đặc tả use case ``Quản lý giỏ hàng''}}{19}{table.2.9}%
+\contentsline {table}{\numberline {2.10}{\ignorespaces Đặc tả use case ``Quản lý danh sách yêu thích''}}{19}{table.2.10}%
+\contentsline {table}{\numberline {2.11}{\ignorespaces Đặc tả use case ``So sánh sản phẩm''}}{19}{table.2.11}%
+\contentsline {table}{\numberline {2.12}{\ignorespaces Đặc tả use case ``Tạo đơn hàng''}}{20}{table.2.12}%
+\contentsline {table}{\numberline {2.13}{\ignorespaces Đặc tả use case ``Đặt hàng''}}{20}{table.2.13}%
+\contentsline {table}{\numberline {2.14}{\ignorespaces Đặc tả use case ``Thanh toán đơn hàng''}}{21}{table.2.14}%
+\contentsline {table}{\numberline {2.15}{\ignorespaces Đặc tả use case ``Hủy đơn hàng''}}{21}{table.2.15}%
+\contentsline {table}{\numberline {2.16}{\ignorespaces Đặc tả use case ``Xem lịch sử đơn hàng''}}{21}{table.2.16}%
+\contentsline {table}{\numberline {2.17}{\ignorespaces Đặc tả use case ``Yêu cầu đổi/trả hàng''}}{22}{table.2.17}%
+\contentsline {table}{\numberline {2.18}{\ignorespaces Đặc tả use case ``Đánh giá, bình luận sản phẩm''}}{22}{table.2.18}%
+\contentsline {table}{\numberline {2.19}{\ignorespaces Dữ liệu đầu vào use case ``Đăng nhập''}}{22}{table.2.19}%
+\contentsline {table}{\numberline {2.20}{\ignorespaces Đặc tả use case ``Đăng xuất''}}{23}{table.2.20}%
+\contentsline {table}{\numberline {2.21}{\ignorespaces Đặc tả use case ``Xem danh sách sản phẩm''}}{23}{table.2.21}%
+\contentsline {table}{\numberline {2.22}{\ignorespaces Đặc tả use case ``Xem chi tiết sản phẩm''}}{24}{table.2.22}%
+\contentsline {table}{\numberline {2.23}{\ignorespaces Đặc tả use case ``Áp dụng mã giảm giá''}}{24}{table.2.23}%
+\contentsline {table}{\numberline {2.24}{\ignorespaces Đặc tả use case ``Quản lý thông tin cá nhân''}}{24}{table.2.24}%
+\contentsline {table}{\numberline {2.25}{\ignorespaces Dữ liệu đầu vào use case ``Quản lý thông tin cá nhân''}}{25}{table.2.25}%
+\contentsline {table}{\numberline {2.26}{\ignorespaces Đặc tả use case ``Quản lý địa chỉ giao hàng''}}{25}{table.2.26}%
+\contentsline {table}{\numberline {2.27}{\ignorespaces Dữ liệu đầu vào use case ``Quản lý địa chỉ giao hàng''}}{25}{table.2.27}%
+\contentsline {table}{\numberline {2.28}{\ignorespaces Đặc tả use case ``Quản lý sản phẩm''}}{26}{table.2.28}%
+\contentsline {table}{\numberline {2.29}{\ignorespaces Đặc tả use case ``Quản lý đơn hàng''}}{26}{table.2.29}%
+\contentsline {table}{\numberline {2.30}{\ignorespaces Đặc tả use case ``Quản lý mã giảm giá''}}{27}{table.2.30}%
+\contentsline {table}{\numberline {2.31}{\ignorespaces Đặc tả use case ``Kiểm duyệt đánh giá''}}{27}{table.2.31}%
+\contentsline {table}{\numberline {2.32}{\ignorespaces Đặc tả use case ``Thống kê báo cáo doanh thu''}}{28}{table.2.32}%
+\contentsline {table}{\numberline {2.33}{\ignorespaces Dữ liệu đầu vào use case ``Quản lý mã giảm giá''}}{28}{table.2.33}%
+\contentsline {table}{\numberline {2.34}{\ignorespaces Đặc tả use case ``Đăng nhập quản trị''}}{29}{table.2.34}%
+\contentsline {table}{\numberline {2.35}{\ignorespaces Đặc tả use case ``Quản lý danh mục sản phẩm''}}{29}{table.2.35}%
+\contentsline {table}{\numberline {2.36}{\ignorespaces Đặc tả use case ``Quản lý tồn kho''}}{29}{table.2.36}%
+\contentsline {table}{\numberline {2.37}{\ignorespaces Đặc tả use case ``Xử lý đổi/trả hàng''}}{30}{table.2.37}%
+\contentsline {table}{\numberline {2.38}{\ignorespaces Đặc tả use case ``Quản lý flash sale''}}{30}{table.2.38}%
+\contentsline {table}{\numberline {2.39}{\ignorespaces Đặc tả use case ``Quản lý banner và nội dung''}}{31}{table.2.39}%
+\contentsline {table}{\numberline {2.40}{\ignorespaces Đặc tả use case ``Quản lý tài khoản khách hàng''}}{31}{table.2.40}%
+\contentsline {table}{\numberline {2.41}{\ignorespaces Ma trận phân quyền người dùng}}{32}{table.2.41}%
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {4.1}{\ignorespaces Bảng User --- người dùng}}{40}{table.4.1}%
+\contentsline {table}{\numberline {4.2}{\ignorespaces Bảng Address --- địa chỉ giao hàng}}{40}{table.4.2}%
+\contentsline {table}{\numberline {4.3}{\ignorespaces Bảng Category --- danh mục sản phẩm}}{41}{table.4.3}%
+\contentsline {table}{\numberline {4.4}{\ignorespaces Bảng Product --- sản phẩm}}{41}{table.4.4}%
+\contentsline {table}{\numberline {4.5}{\ignorespaces Bảng ProductImage --- ảnh sản phẩm}}{41}{table.4.5}%
+\contentsline {table}{\numberline {4.6}{\ignorespaces Bảng ProductVariant --- biến thể sản phẩm}}{42}{table.4.6}%
+\contentsline {table}{\numberline {4.7}{\ignorespaces Bảng Order --- đơn hàng}}{42}{table.4.7}%
+\contentsline {table}{\numberline {4.8}{\ignorespaces Bảng OrderItem --- chi tiết đơn hàng}}{43}{table.4.8}%
+\contentsline {table}{\numberline {4.9}{\ignorespaces Bảng InventoryLog --- nhật ký tồn kho}}{43}{table.4.9}%
+\contentsline {table}{\numberline {4.10}{\ignorespaces Bảng Review --- đánh giá sản phẩm}}{43}{table.4.10}%
+\contentsline {table}{\numberline {4.11}{\ignorespaces Bảng WishlistItem --- danh sách yêu thích}}{43}{table.4.11}%
+\contentsline {table}{\numberline {4.12}{\ignorespaces Bảng Voucher --- mã giảm giá}}{44}{table.4.12}%
+\contentsline {table}{\numberline {4.13}{\ignorespaces Bảng VoucherRedemption --- lượt dùng voucher}}{44}{table.4.13}%
+\contentsline {table}{\numberline {4.14}{\ignorespaces Bảng FlashSale --- chương trình flash sale}}{44}{table.4.14}%
+\contentsline {table}{\numberline {4.15}{\ignorespaces Bảng FlashSaleItem --- sản phẩm trong flash sale}}{44}{table.4.15}%
+\contentsline {table}{\numberline {4.16}{\ignorespaces Bảng ReturnRequest --- yêu cầu đổi/trả}}{45}{table.4.16}%
+\contentsline {table}{\numberline {4.17}{\ignorespaces Bảng Banner --- banner trang chủ}}{45}{table.4.17}%
+\contentsline {table}{\numberline {4.18}{\ignorespaces Các kiểu liệt kê (enum) trong cơ sở dữ liệu}}{45}{table.4.18}%
+\contentsline {table}{\numberline {4.19}{\ignorespaces Ràng buộc duy nhất và chỉ mục tiêu biểu}}{46}{table.4.19}%
+\contentsline {table}{\numberline {4.20}{\ignorespaces Danh sách thư viện và công cụ sử dụng}}{47}{table.4.20}%
+\contentsline {table}{\numberline {4.21}{\ignorespaces Một số ca kiểm thử chức năng}}{56}{table.4.21}%
+\contentsline {table}{\numberline {4.22}{\ignorespaces Môi trường triển khai hệ thống}}{57}{table.4.22}%
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsfinish 

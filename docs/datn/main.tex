@@ -1,0 +1,52 @@
+% ============================================================
+% ĐỒ ÁN TỐT NGHIỆP — Ecokids
+% Build:  latexmk -xelatex main.tex   (hoặc ./build.sh)
+% ============================================================
+\documentclass[12pt,a4paper,oneside]{report}
+\input{preamble}
+\input{info}          % <-- THÔNG TIN CÁ NHÂN: sửa trong file info.tex
+
+\begin{document}
+
+% ---------- FRONT MATTER (đánh số La Mã) ----------
+\pagenumbering{roman}
+
+\input{frontmatter/00-cover}
+\input{frontmatter/01-commitment}
+\input{frontmatter/02-acknowledgment}
+\input{frontmatter/03-abstract-vi}
+\input{frontmatter/04-abstract-en}
+
+\cleardoublepage
+\renewcommand{\contentsname}{Mục lục}
+\tableofcontents
+
+\cleardoublepage
+\addcontentsline{toc}{chapter}{Danh mục hình vẽ}
+\listoffigures
+
+\cleardoublepage
+\addcontentsline{toc}{chapter}{Danh mục bảng}
+\listoftables
+
+\cleardoublepage
+\input{frontmatter/05-abbreviations}
+
+% ---------- MAIN MATTER (đánh số Ả Rập) ----------
+\cleardoublepage
+\pagenumbering{arabic}
+
+\input{chapters/ch1-introduction}
+\input{chapters/ch2-requirements}
+\input{chapters/ch3-technology}
+\input{chapters/ch4-development}
+\input{chapters/ch5-contributions}
+\input{chapters/ch6-conclusion}
+
+% ---------- REFERENCES ----------
+\cleardoublepage
+\bibliographystyle{ieeetr}
+\bibliography{references}
+\addcontentsline{toc}{chapter}{Tài liệu tham khảo}
+
+\end{document}

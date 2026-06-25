@@ -1,0 +1,83 @@
+\chapter{Các giải pháp và đóng góp nổi bật}
+\label{ch:contrib}
+
+Trong quá trình thực hiện, một số vấn đề kỹ thuật đáng chú ý đã được giải quyết. Chương này
+trình bày các vấn đề đó cùng giải pháp tương ứng.
+
+\section{Thanh toán trực tuyến và tự động hủy đơn quá hạn}
+
+\subsection{Vấn đề}
+Khi tích hợp thanh toán trực tuyến, hệ thống cần xử lý trường hợp khách hàng tạo đơn nhưng
+không hoàn tất thanh toán. Nếu đơn vẫn giữ tồn kho vô thời hạn, lượng hàng ``ảo'' bị treo sẽ
+khiến các khách hàng khác không mua được.
+
+\subsection{Giải pháp}
+Hệ thống tích hợp cổng PayOS với quy trình: khi đặt đơn bằng PayOS, một liên kết thanh toán
+được tạo kèm thời hạn (mặc định 24 giờ). Kết quả thanh toán được nhận qua webhook và được xác
+thực bằng chữ ký HMAC; thao tác đánh dấu ``đã thanh toán'' được thiết kế \textit{idempotent} và
+có kiểm tra số tiền để chống xử lý trùng. Một tác vụ cron chạy mỗi 15 phút sẽ quét các đơn PayOS
+quá hạn chưa thanh toán, tự động hủy đơn và hoàn trả tồn kho. Nhờ vậy, tồn kho luôn phản ánh
+đúng lượng hàng thực sự có thể bán.
+
+\section{Đảm bảo nhất quán dữ liệu khi đặt hàng}
+
+\subsection{Vấn đề}
+Nghiệp vụ đặt hàng đụng tới nhiều bảng cùng lúc: kiểm tra và trừ tồn kho của từng biến thể, áp
+dụng và tiêu thụ mã giảm giá, ghi nhận đơn hàng. Nếu nhiều khách hàng đặt cùng một sản phẩm
+gần như đồng thời, có thể xảy ra tình trạng bán vượt tồn kho (oversell) hoặc dùng voucher vượt
+giới hạn.
+
+\subsection{Giải pháp}
+Toàn bộ nghiệp vụ đặt hàng được thực hiện bên trong một giao dịch (transaction) của Prisma với
+mức cô lập cao. Trong giao dịch, hệ thống kiểm tra lại tồn kho theo thời gian thực, trừ kho, kiểm
+tra điều kiện và tiêu thụ voucher một cách nguyên tử. Giá bán được tính lại ở phía máy chủ (ưu
+tiên giá flash sale đang hiệu lực) thay vì tin vào dữ liệu gửi từ client, bảo đảm tính toàn vẹn và
+chống gian lận giá. Nếu bất kỳ bước nào thất bại, toàn bộ giao dịch được hoàn tác.
+
+\section{Quản lý chương trình khuyến mãi}
+
+\subsection{Vấn đề}
+Hệ thống cần hỗ trợ đồng thời hai cơ chế khuyến mãi: mã giảm giá (voucher) áp dụng ở cấp đơn
+hàng và flash sale giảm giá ở cấp sản phẩm trong một khoảng thời gian giới hạn.
+
+\subsection{Giải pháp}
+Các hàm tính giá thuần (không phụ thuộc trạng thái) được tách riêng và có kiểm thử đơn vị: hàm
+tính giá hiệu lực của sản phẩm (ưu tiên giá flash sale đang chạy) và hàm tính mức giảm của
+voucher (theo phần trăm hoặc số tiền, có giới hạn mức giảm tối đa). Voucher được kiểm tra điều
+kiện (thời hạn, đơn tối thiểu, giới hạn lượt dùng theo tổng và theo người dùng) và tiêu thụ ngay
+trong giao dịch đặt hàng, tránh việc một mã bị dùng vượt mức.
+
+\section{Tìm kiếm sản phẩm tiếng Việt không dấu}
+
+\subsection{Vấn đề}
+Người dùng Việt Nam thường gõ tìm kiếm không dấu hoặc thiếu dấu (ví dụ ``ao thun'' thay vì ``áo
+thun''). Hệ thống cần trả về kết quả phù hợp bất kể người dùng có gõ dấu hay không.
+
+\subsection{Giải pháp}
+Hệ thống sử dụng tính năng tìm kiếm toàn văn của PostgreSQL kết hợp tiện ích mở rộng
+\texttt{unaccent} để loại bỏ dấu và \texttt{pg\_trgm} để so khớp gần đúng. Nhờ đó, việc chuẩn
+hóa dấu được thực hiện thống nhất ở tầng cơ sở dữ liệu, không cần xử lý thủ công ở phía client, cho
+kết quả tìm kiếm chính xác và nhất quán.
+
+\section{Bảo mật dữ liệu mức dòng}
+
+\subsection{Vấn đề}
+Cần bảo đảm mỗi người dùng chỉ truy cập được dữ liệu của chính mình (đơn hàng, địa chỉ, danh
+sách yêu thích), trong khi quản trị viên có quyền truy cập rộng hơn.
+
+\subsection{Giải pháp}
+Bên cạnh việc kiểm tra phân quyền ở tầng ứng dụng, hệ thống áp dụng Row-Level Security (RLS)
+ở tầng cơ sở dữ liệu PostgreSQL. Các chính sách RLS bảo đảm rằng ngay cả khi có lỗi ở tầng ứng
+dụng, dữ liệu của người dùng này cũng không bị lộ cho người dùng khác, tạo thêm một lớp phòng
+thủ theo nguyên tắc phòng thủ nhiều lớp (defense in depth).
+
+\section{Quản lý nội dung trang chủ}
+
+\subsection{Vấn đề}
+Trang chủ cần hiển thị các banner quảng cáo có thể thay đổi thường xuyên về nội dung và thứ tự,
+do quản trị viên tự cập nhật mà không cần lập trình viên can thiệp.
+
+\subsection{Giải pháp}
+Hệ thống xây dựng chức năng quản lý banner cho phép thêm, sửa, xóa và đặc biệt là sắp xếp thứ
+tự bằng thao tác kéo thả trực quan (sử dụng thư viện dnd-kit). Thứ tự hiển thị được lưu vào cơ sở
+dữ liệu và phản ánh ngay trên trang chủ, giúp quản trị viên chủ động trong việc tổ chức nội dung.

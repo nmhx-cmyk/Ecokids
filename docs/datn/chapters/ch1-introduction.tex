@@ -1,0 +1,135 @@
+\chapter{Giới thiệu đề tài}
+\label{ch:intro}
+
+\section{Đặt vấn đề}
+
+Trong những năm gần đây, cùng với sự phát triển mạnh mẽ của công nghệ thông tin và thương
+mại điện tử, mô hình kinh doanh trực tuyến ngày càng trở nên phổ biến tại Việt Nam. Hầu hết
+các cửa hàng và doanh nghiệp bán lẻ đã và đang chuyển đổi từ hình thức kinh doanh truyền
+thống sang trực tuyến nhằm tiếp cận khách hàng nhanh hơn, tiết kiệm chi phí vận hành và nâng
+cao hiệu quả kinh doanh.
+
+Trước đây, việc quản lý sản phẩm, đơn hàng hay dữ liệu khách hàng chủ yếu được thực hiện
+thủ công, gây ra nhiều hạn chế trong quá trình vận hành, đặc biệt khi quy mô kinh doanh mở
+rộng. Với các mặt hàng có tính cập nhật nhanh và đa dạng mẫu mã như quần áo trẻ em, việc
+quản lý thủ công càng bộc lộ nhiều bất cập --- từ khâu cập nhật sản phẩm, theo dõi tồn kho
+theo từng biến thể (kích cỡ, màu sắc), đến xử lý đơn hàng và chăm sóc khách hàng.
+
+Lý do lựa chọn ngành hàng thời trang trẻ em xuất phát từ đặc thù riêng của nhóm sản phẩm này.
+Quần áo trẻ em có vòng đời ngắn do trẻ lớn nhanh, nhu cầu thay mới liên tục, phân loại theo
+nhiều độ tuổi và giới tính, đồng thời đặt ra yêu cầu cao về chất liệu và độ an toàn. Người mua
+chủ yếu là các bậc phụ huynh trẻ, bận rộn, đề cao sự tiện lợi cũng như thông tin sản phẩm minh
+bạch và đáng tin cậy. Đây là một thị trường có sức tiêu thụ ổn định và tiềm năng lớn cho hoạt
+động kinh doanh trực tuyến.
+
+Qua quá trình khảo sát thực tế, tôi nhận thấy nhiều cửa hàng thời trang trẻ em quy mô vừa và
+nhỏ vẫn đang bán hàng chủ yếu qua các kênh mạng xã hội như Facebook, Instagram hay các sàn
+thương mại điện tử trung gian. Cách làm này tuy dễ bắt đầu nhưng bộc lộ nhiều hạn chế: thông
+tin sản phẩm phân tán, khó quản lý tồn kho và đơn hàng tập trung, không chủ động được về
+thương hiệu, dữ liệu khách hàng và các chương trình khuyến mãi. Việc xây dựng một website
+thương mại điện tử riêng sẽ giúp cửa hàng giới thiệu sản phẩm chuyên nghiệp, quản lý hàng hóa
+và đơn hàng hiệu quả, đồng thời mang lại trải nghiệm mua sắm trực quan, tiện lợi và hiện đại
+cho người dùng.
+
+Từ thực tế đó, tôi quyết định thực hiện đề tài \textit{``\thesisTitle''} với mục tiêu xây dựng một
+nền tảng thương mại điện tử hiện đại, tối ưu trải nghiệm khách hàng, đồng thời hỗ trợ người bán
+trong việc quản lý và phát triển thương hiệu trong thời đại số.
+
+\section{Mục tiêu và phạm vi đề tài}
+
+\subsection{Mục tiêu}
+
+Mục tiêu hàng đầu của đề tài là xây dựng một website thương mại điện tử hoàn chỉnh, hiện đại,
+thân thiện và dễ sử dụng cho thương hiệu thời trang trẻ em \brandName{}, đáp ứng đồng thời hai
+nhóm nhu cầu:
+
+\begin{itemize}
+  \item \textbf{Đối với khách hàng:} cung cấp trải nghiệm mua sắm trực tuyến thuận tiện ---
+  duyệt và tìm kiếm sản phẩm theo danh mục, độ tuổi, giới tính, kích cỡ và màu sắc; xem chi
+  tiết sản phẩm với hình ảnh và đánh giá; quản lý giỏ hàng, danh sách yêu thích; đặt hàng và
+  thanh toán trực tuyến an toàn; theo dõi trạng thái đơn hàng.
+
+  \item \textbf{Đối với người bán (quản trị):} cung cấp một hệ quản trị tập trung cho phép quản
+  lý sản phẩm và biến thể, tồn kho, đơn hàng, khách hàng, khuyến mãi (mã giảm giá, flash sale),
+  nội dung trang chủ, cũng như theo dõi báo cáo doanh thu và xuất dữ liệu phục vụ ra quyết định
+  kinh doanh.
+\end{itemize}
+
+Bên cạnh mục tiêu sản phẩm, đề tài còn hướng tới việc vận dụng các công nghệ web hiện đại
+(Next.js, React Server Components, Prisma, PostgreSQL) để xây dựng hệ thống theo hướng có
+khả năng mở rộng, dễ bảo trì, bảo đảm hiệu năng và an toàn dữ liệu.
+
+\subsection{Phạm vi}
+
+Hệ thống \brandName{} được xây dựng với hai nhóm tác nhân chính: \textbf{Khách hàng} (người
+mua) và \textbf{Quản trị viên} (người bán/quản lý). Phạm vi chức năng của từng nhóm như sau:
+
+\textbf{Đối với Khách hàng:}
+\begin{itemize}
+  \item Đăng ký, đăng nhập, đăng xuất; quản lý thông tin cá nhân và sổ địa chỉ giao hàng.
+  \item Xem danh sách và chi tiết sản phẩm; tìm kiếm và lọc theo danh mục, độ tuổi, giới tính,
+  kích cỡ, màu sắc, khoảng giá.
+  \item Quản lý giỏ hàng, danh sách yêu thích và so sánh sản phẩm.
+  \item Tạo đơn hàng, áp dụng mã giảm giá, đặt hàng và thanh toán (COD hoặc trực tuyến qua
+  PayOS); theo dõi lịch sử và trạng thái đơn hàng; yêu cầu đổi/trả hàng.
+  \item Đánh giá, bình luận sản phẩm sau khi mua.
+\end{itemize}
+
+\textbf{Đối với Quản trị viên:}
+\begin{itemize}
+  \item Quản lý danh mục, sản phẩm và biến thể sản phẩm; quản lý tồn kho.
+  \item Quản lý đơn hàng (xác nhận, cập nhật trạng thái giao hàng, mã vận đơn), xử lý đổi/trả.
+  \item Quản lý mã giảm giá và chương trình flash sale; quản lý banner và nội dung trang chủ.
+  \item Quản lý tài khoản khách hàng; kiểm duyệt đánh giá.
+  \item Xem báo cáo thống kê doanh thu, sản phẩm bán chạy và xuất báo cáo ra tệp Excel.
+\end{itemize}
+
+\textbf{Giới hạn phạm vi:} Để tập trung vào các nghiệp vụ cốt lõi của một sàn thương mại điện
+tử và phù hợp với thời gian thực hiện đồ án, hệ thống có một số giới hạn về phạm vi: thanh toán
+trực tuyến sử dụng một cổng duy nhất là PayOS (bên cạnh COD); việc giao vận được quản lý ở
+mức trạng thái và mã vận đơn do quản trị viên cập nhật thủ công (không tích hợp sâu với các đơn
+vị vận chuyển như GHN, GHTK); tìm kiếm sản phẩm sử dụng cơ chế tìm kiếm toàn văn của
+PostgreSQL thay vì dịch vụ tìm kiếm ngoài.
+
+\section{Định hướng giải pháp}
+
+Trên cơ sở mục tiêu và phạm vi đã xác định, đề tài lựa chọn định hướng giải pháp như sau:
+
+\begin{itemize}
+  \item \textbf{Kiến trúc full-stack hợp nhất với Next.js 14:} sử dụng App Router cùng React
+  Server Components và Server Actions, cho phép phần lớn nghiệp vụ được xử lý ngay trên máy chủ,
+  giảm lượng mã chạy phía trình duyệt, cải thiện hiệu năng và tối ưu SEO --- yếu tố quan trọng đối
+  với một website thương mại điện tử.
+
+  \item \textbf{Lưu trữ dữ liệu với PostgreSQL trên nền Supabase:} truy cập qua Prisma ORM để
+  bảo đảm an toàn kiểu dữ liệu và năng suất phát triển; tận dụng các tính năng nâng cao của
+  PostgreSQL như tìm kiếm toàn văn (\texttt{unaccent}, \texttt{pg\_trgm}) và bảo mật mức dòng
+  (Row-Level Security).
+
+  \item \textbf{Thanh toán trực tuyến qua PayOS:} tích hợp cổng thanh toán PayOS với cơ chế tạo
+  liên kết thanh toán, xác thực webhook và tự động hủy đơn chưa thanh toán quá hạn để hoàn trả
+  tồn kho.
+
+  \item \textbf{Triển khai trên nền tảng Vercel:} tận dụng khả năng triển khai liên tục, hàm
+  serverless và tác vụ định kỳ (cron) sẵn có cho ứng dụng Next.js.
+\end{itemize}
+
+\section{Bố cục đồ án}
+
+Nội dung đồ án được trình bày trong sáu chương với bố cục như sau:
+
+\begin{itemize}
+  \item \textbf{Chương 1 --- Giới thiệu đề tài:} trình bày bối cảnh, lý do chọn đề tài, mục tiêu,
+  phạm vi, định hướng giải pháp và bố cục của đồ án.
+  \item \textbf{Chương 2 --- Khảo sát và phân tích yêu cầu:} khảo sát hiện trạng, xác định các tác
+  nhân và chức năng của hệ thống thông qua biểu đồ use case, đặc tả chi tiết các ca sử dụng và các
+  yêu cầu phi chức năng.
+  \item \textbf{Chương 3 --- Công nghệ sử dụng:} giới thiệu các công nghệ, nền tảng và công cụ
+  được sử dụng để xây dựng hệ thống cùng lý do lựa chọn.
+  \item \textbf{Chương 4 --- Phát triển và triển khai ứng dụng:} trình bày thiết kế kiến trúc, thiết
+  kế cơ sở dữ liệu, quá trình xây dựng, kết quả giao diện, kiểm thử và triển khai hệ thống.
+  \item \textbf{Chương 5 --- Các giải pháp và đóng góp nổi bật:} phân tích một số vấn đề kỹ thuật
+  tiêu biểu gặp phải trong quá trình thực hiện và giải pháp tương ứng.
+  \item \textbf{Chương 6 --- Kết luận và hướng phát triển:} tổng kết các kết quả đạt được và đề
+  xuất các hướng phát triển trong tương lai.
+\end{itemize}

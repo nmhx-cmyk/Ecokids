@@ -1,0 +1,46 @@
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontName "Be Vietnam Pro"
+skinparam defaultFontSize 13
+left to right direction
+
+actor "Quản trị viên" as QTV
+
+rectangle "Chức năng Quản trị" {
+  usecase "Đăng nhập" as L
+  usecase "Quản lý danh mục sản phẩm" as M1
+  usecase "Quản lý sản phẩm & biến thể" as M2
+  usecase "Quản lý tồn kho" as M3
+  usecase "Quản lý đơn hàng" as M4
+  usecase "Cập nhật trạng thái &\nmã vận đơn" as M5
+  usecase "In phiếu giao hàng" as M6
+  usecase "Xử lý đổi / trả hàng" as M7
+  usecase "Quản lý mã giảm giá" as M8
+  usecase "Quản lý flash sale" as M9
+  usecase "Quản lý banner & nội dung" as M10
+  usecase "Quản lý tài khoản khách hàng" as M11
+  usecase "Kiểm duyệt đánh giá" as M12
+  usecase "Thống kê, báo cáo doanh thu" as M13
+  usecase "Xuất báo cáo Excel" as M14
+}
+
+QTV --> L
+QTV --> M1
+QTV --> M2
+QTV --> M3
+QTV --> M4
+QTV --> M7
+QTV --> M8
+QTV --> M9
+QTV --> M10
+QTV --> M11
+QTV --> M12
+QTV --> M13
+
+M4 ..> M5 : <<include>>
+M4 ..> M6 : <<extend>>
+M2 ..> M3 : <<extend>>
+M13 ..> M14 : <<extend>>
+@enduml

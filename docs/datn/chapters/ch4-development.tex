@@ -1,0 +1,421 @@
+\chapter{Phát triển và triển khai ứng dụng}
+\label{ch:dev}
+
+\section{Thiết kế kiến trúc}
+
+\subsection{Lựa chọn kiến trúc phần mềm}
+
+Hệ thống \brandName{} được xây dựng theo kiến trúc phân tầng trên nền tảng Next.js, chia thành
+ba tầng rõ ràng như Hình~\ref{fig:architecture}:
+
+\begin{itemize}
+  \item \textbf{Tầng trình diễn (Presentation):} chạy trên trình duyệt, gồm các thành phần giao
+  diện React (Client Components) sử dụng Tailwind CSS để tạo kiểu và Zustand để quản lý trạng
+  thái cục bộ như giỏ hàng, danh sách yêu thích và so sánh.
+  \item \textbf{Tầng ứng dụng / nghiệp vụ (Application):} chạy trên máy chủ Next.js triển khai tại
+  Vercel. Tầng này gồm các React Server Components (kết xuất giao diện và truy vấn dữ liệu đọc),
+  Server Actions (xử lý các nghiệp vụ ghi như đặt hàng, kiểm duyệt), các Route Handler (webhook
+  PayOS, tải ảnh, tìm kiếm) và tác vụ định kỳ (hủy đơn quá hạn).
+  \item \textbf{Tầng dữ liệu \& dịch vụ (Data \& Services):} gồm cơ sở dữ liệu PostgreSQL trên
+  Supabase (truy cập qua Prisma), dịch vụ xác thực và lưu trữ của Supabase, cùng các dịch vụ
+  ngoài: PayOS (thanh toán), Resend (email) và Upstash (giới hạn truy cập).
+\end{itemize}
+
+\fig{figures/diagrams/architecture.pdf}{0.95}{\caption{Sơ đồ kiến trúc hệ thống ba tầng}\label{fig:architecture}}
+
+Việc lựa chọn kiến trúc này tận dụng được thế mạnh của Next.js: phần lớn logic nghiệp vụ và truy
+vấn dữ liệu được thực thi trên máy chủ, giúp giảm mã chạy phía client, tăng cường an toàn (không
+lộ khóa bí mật ra trình duyệt) và tối ưu SEO --- yếu tố quan trọng đối với một website thương mại
+điện tử.
+
+\section{Thiết kế tổng quan}
+
+\subsection{Mô tả tổng quát}
+
+Hệ thống được tổ chức thành hai khu vực chính: khu vực bán hàng (storefront) dành cho khách
+hàng và khu vực quản trị (admin) dành cho người bán. Mã nguồn được tổ chức theo tầng:
+
+\begin{itemize}
+  \item Tầng giao diện: các trang và thành phần trong thư mục \texttt{app/} và \texttt{components/}.
+  \item Tầng nghiệp vụ: các Server Action và hàm dịch vụ trong \texttt{lib/server/}.
+  \item Tầng truy vấn dữ liệu: các hàm đọc dữ liệu trong \texttt{lib/queries/}.
+  \item Tầng kiểm tra dữ liệu: các lược đồ Zod trong \texttt{lib/validations/}.
+\end{itemize}
+
+\subsection{Luồng xử lý tổng quát}
+
+Một yêu cầu đọc dữ liệu (ví dụ xem danh sách sản phẩm) được xử lý như sau: trình duyệt gửi yêu
+cầu, máy chủ Next.js kết xuất Server Component, truy vấn dữ liệu qua Prisma, sau đó trả về HTML
+đã được dựng sẵn cho trình duyệt. Với một thao tác ghi (ví dụ đặt hàng), thành phần giao diện gọi
+trực tiếp một Server Action; hàm này kiểm tra dữ liệu bằng Zod, thực hiện nghiệp vụ trong một
+giao dịch Prisma (kiểm tra tồn kho, tạo đơn, trừ kho, áp dụng voucher), rồi trả kết quả về giao
+diện. Các sự kiện bất đồng bộ như thông báo thanh toán từ PayOS được xử lý qua Route Handler
+webhook.
+
+Hình~\ref{fig:seq-order} mô tả chi tiết luồng tương tác của nghiệp vụ đặt hàng và thanh toán ---
+nghiệp vụ phức tạp và quan trọng nhất của hệ thống --- dưới dạng biểu đồ tuần tự, bao gồm cả hai
+hình thức thanh toán COD và PayOS.
+
+\fig{figures/diagrams/seq-order.pdf}{1.0}{\caption{Biểu đồ tuần tự nghiệp vụ đặt hàng và thanh toán}\label{fig:seq-order}}
+
+\section{Thiết kế chi tiết}
+
+\subsection{Thiết kế cơ sở dữ liệu}
+
+Cơ sở dữ liệu của hệ thống được thiết kế gồm 17 bảng chính, mô tả bằng lược đồ Prisma và triển
+khai trên PostgreSQL. Hình~\ref{fig:er} thể hiện mối liên hệ giữa các bảng. Các bảng chi tiết được
+mô tả trong các Bảng~\ref{tab:db-user}--\ref{tab:db-banner}.
+
+\fig{figures/diagrams/er.pdf}{1.0}{\caption{Mối liên hệ giữa các bảng trong cơ sở dữ liệu}\label{fig:er}}
+
+\begin{dbtable}{Bảng User --- người dùng}\label{tab:db-user}
+1 & id & uuid & PK & Định danh người dùng \\ \hline
+2 & email & text & not null, unique & Địa chỉ email \\ \hline
+3 & name & text & & Họ tên \\ \hline
+4 & phone & text & & Số điện thoại \\ \hline
+5 & role & enum & not null & Vai trò (USER/ADMIN) \\ \hline
+6 & avatarUrl & text & & Ảnh đại diện \\ \hline
+7 & createdAt & timestamp & not null & Ngày tạo \\ \hline
+8 & updatedAt & timestamp & not null & Ngày cập nhật \\ \hline
+\end{dbtable}
+
+\begin{dbtable}{Bảng Address --- địa chỉ giao hàng}\label{tab:db-address}
+1 & id & text & PK & Định danh địa chỉ \\ \hline
+2 & userId & uuid & FK & Tham chiếu User \\ \hline
+3 & recipientName & text & not null & Tên người nhận \\ \hline
+4 & phone & text & not null & Số điện thoại \\ \hline
+5 & province & text & not null & Tỉnh/thành \\ \hline
+6 & district & text & not null & Quận/huyện \\ \hline
+7 & ward & text & not null & Phường/xã \\ \hline
+8 & addressLine & text & not null & Địa chỉ chi tiết \\ \hline
+9 & isDefault & boolean & not null & Là địa chỉ mặc định \\ \hline
+\end{dbtable}
+
+\begin{dbtable}{Bảng Category --- danh mục sản phẩm}\label{tab:db-category}
+1 & id & text & PK & Định danh danh mục \\ \hline
+2 & name & text & not null & Tên danh mục \\ \hline
+3 & slug & text & not null, unique & Đường dẫn thân thiện \\ \hline
+4 & parentId & text & FK & Danh mục cha (tự tham chiếu) \\ \hline
+5 & imageUrl & text & & Ảnh danh mục \\ \hline
+6 & sortOrder & int & not null & Thứ tự hiển thị \\ \hline
+\end{dbtable}
+
+\begin{dbtable}{Bảng Product --- sản phẩm}\label{tab:db-product}
+1 & id & text & PK & Định danh sản phẩm \\ \hline
+2 & slug & text & not null, unique & Đường dẫn thân thiện \\ \hline
+3 & name & text & not null & Tên sản phẩm \\ \hline
+4 & description & text & not null & Mô tả \\ \hline
+5 & categoryId & text & FK & Danh mục \\ \hline
+6 & ageRange & enum[] & & Nhóm độ tuổi \\ \hline
+7 & gender & enum & not null & Giới tính (BOY/GIRL/UNISEX) \\ \hline
+8 & basePrice & int & not null & Giá gốc (VND) \\ \hline
+9 & comparePrice & int & & Giá so sánh (gạch ngang) \\ \hline
+10 & status & enum & not null & Trạng thái (DRAFT/ACTIVE/ARCHIVED) \\ \hline
+11 & ratingAvg & float & not null & Điểm đánh giá trung bình \\ \hline
+12 & ratingCount & int & not null & Số lượt đánh giá \\ \hline
+\end{dbtable}
+
+\begin{dbtable}{Bảng ProductImage --- ảnh sản phẩm}\label{tab:db-image}
+1 & id & text & PK & Định danh ảnh \\ \hline
+2 & productId & text & FK & Sản phẩm \\ \hline
+3 & url & text & not null & Đường dẫn ảnh \\ \hline
+4 & alt & text & not null & Văn bản thay thế \\ \hline
+5 & sortOrder & int & not null & Thứ tự \\ \hline
+6 & isPrimary & boolean & not null & Là ảnh đại diện \\ \hline
+\end{dbtable}
+
+\begin{dbtable}{Bảng ProductVariant --- biến thể sản phẩm}\label{tab:db-variant}
+1 & id & text & PK & Định danh biến thể \\ \hline
+2 & productId & text & FK & Sản phẩm \\ \hline
+3 & sku & text & not null, unique & Mã SKU \\ \hline
+4 & size & text & not null & Kích cỡ \\ \hline
+5 & color & text & not null & Màu sắc \\ \hline
+6 & colorHex & text & & Mã màu \\ \hline
+7 & price & int & & Giá riêng của biến thể \\ \hline
+8 & stock & int & not null & Số lượng tồn kho \\ \hline
+\end{dbtable}
+
+\begin{dbtable}{Bảng Order --- đơn hàng}\label{tab:db-order}
+1 & id & text & PK & Định danh đơn hàng \\ \hline
+2 & orderCode & text & not null, unique & Mã đơn hàng \\ \hline
+3 & userId & uuid & FK & Khách hàng \\ \hline
+4 & status & enum & not null & Trạng thái đơn \\ \hline
+5 & paymentMethod & enum & not null & Phương thức thanh toán \\ \hline
+6 & paymentStatus & enum & not null & Trạng thái thanh toán \\ \hline
+7 & subtotal & int & not null & Tạm tính \\ \hline
+8 & shippingFee & int & not null & Phí vận chuyển \\ \hline
+9 & discountTotal & int & not null & Tổng giảm giá \\ \hline
+10 & voucherCode & text & & Mã giảm giá áp dụng \\ \hline
+11 & total & int & not null & Tổng thanh toán \\ \hline
+12 & trackingCode & text & & Mã vận đơn \\ \hline
+13 & shippingAddress & jsonb & not null & Địa chỉ giao (bản sao) \\ \hline
+14 & payosOrderCode & bigint & unique & Mã đơn PayOS \\ \hline
+15 & paymentExpiresAt & timestamp & & Hạn thanh toán \\ \hline
+\end{dbtable}
+
+\begin{dbtable}{Bảng OrderItem --- chi tiết đơn hàng}\label{tab:db-orderitem}
+1 & id & text & PK & Định danh dòng hàng \\ \hline
+2 & orderId & text & FK & Đơn hàng \\ \hline
+3 & variantId & text & FK & Biến thể sản phẩm \\ \hline
+4 & productName & text & not null & Tên sản phẩm (bản sao) \\ \hline
+5 & variantSize & text & not null & Kích cỡ \\ \hline
+6 & variantColor & text & not null & Màu sắc \\ \hline
+7 & unitPrice & int & not null & Đơn giá \\ \hline
+8 & quantity & int & not null & Số lượng \\ \hline
+9 & subtotal & int & not null & Thành tiền \\ \hline
+\end{dbtable}
+
+\begin{dbtable}{Bảng InventoryLog --- nhật ký tồn kho}\label{tab:db-invlog}
+1 & id & text & PK & Định danh bản ghi \\ \hline
+2 & variantId & text & FK & Biến thể sản phẩm \\ \hline
+3 & delta & int & not null & Lượng thay đổi (+/-) \\ \hline
+4 & reason & enum & not null & Lý do thay đổi \\ \hline
+5 & note & text & & Ghi chú \\ \hline
+6 & adminUserId & uuid & FK & Quản trị viên thực hiện \\ \hline
+7 & createdAt & timestamp & not null & Thời điểm \\ \hline
+\end{dbtable}
+
+\begin{dbtable}{Bảng Review --- đánh giá sản phẩm}\label{tab:db-review}
+1 & id & text & PK & Định danh đánh giá \\ \hline
+2 & productId & text & FK & Sản phẩm \\ \hline
+3 & userId & uuid & FK & Người đánh giá \\ \hline
+4 & rating & int & not null & Số sao (1--5) \\ \hline
+5 & comment & text & not null & Nội dung nhận xét \\ \hline
+6 & images & text[] & & Ảnh đính kèm \\ \hline
+7 & status & enum & not null & Trạng thái kiểm duyệt \\ \hline
+8 & adminReply & text & & Phản hồi của quản trị \\ \hline
+\end{dbtable}
+
+\begin{dbtable}{Bảng WishlistItem --- danh sách yêu thích}\label{tab:db-wishlist}
+1 & id & text & PK & Định danh \\ \hline
+2 & userId & uuid & FK & Người dùng \\ \hline
+3 & productId & text & FK & Sản phẩm \\ \hline
+4 & createdAt & timestamp & not null & Thời điểm thêm \\ \hline
+\end{dbtable}
+
+\begin{dbtable}{Bảng Voucher --- mã giảm giá}\label{tab:db-voucher}
+1 & id & text & PK & Định danh voucher \\ \hline
+2 & code & text & not null, unique & Mã giảm giá \\ \hline
+3 & discountType & enum & not null & Loại giảm (PERCENT/FIXED) \\ \hline
+4 & discountValue & int & not null & Giá trị giảm \\ \hline
+5 & minOrderValue & int & not null & Giá trị đơn tối thiểu \\ \hline
+6 & maxDiscount & int & & Mức giảm tối đa \\ \hline
+7 & usageLimit & int & & Giới hạn lượt dùng \\ \hline
+8 & perUserLimit & int & & Giới hạn theo người dùng \\ \hline
+9 & startsAt & timestamp & not null & Thời điểm bắt đầu \\ \hline
+10 & endsAt & timestamp & not null & Thời điểm kết thúc \\ \hline
+\end{dbtable}
+
+\begin{dbtable}{Bảng VoucherRedemption --- lượt dùng voucher}\label{tab:db-vr}
+1 & id & text & PK & Định danh \\ \hline
+2 & voucherId & text & FK & Voucher \\ \hline
+3 & userId & uuid & FK & Người dùng \\ \hline
+4 & orderId & text & FK, unique & Đơn hàng áp dụng \\ \hline
+5 & discount & int & not null & Số tiền đã giảm \\ \hline
+\end{dbtable}
+
+\begin{dbtable}{Bảng FlashSale --- chương trình flash sale}\label{tab:db-flashsale}
+1 & id & text & PK & Định danh chương trình \\ \hline
+2 & name & text & not null & Tên chương trình \\ \hline
+3 & startsAt & timestamp & not null & Thời điểm bắt đầu \\ \hline
+4 & endsAt & timestamp & not null & Thời điểm kết thúc \\ \hline
+5 & isActive & boolean & not null & Đang kích hoạt \\ \hline
+\end{dbtable}
+
+\begin{dbtable}{Bảng FlashSaleItem --- sản phẩm trong flash sale}\label{tab:db-fsi}
+1 & id & text & PK & Định danh \\ \hline
+2 & flashSaleId & text & FK & Chương trình flash sale \\ \hline
+3 & productId & text & FK & Sản phẩm \\ \hline
+4 & salePrice & int & not null & Giá khuyến mãi \\ \hline
+\end{dbtable}
+
+\begin{dbtable}{Bảng ReturnRequest --- yêu cầu đổi/trả}\label{tab:db-return}
+1 & id & text & PK & Định danh yêu cầu \\ \hline
+2 & orderId & text & FK, unique & Đơn hàng \\ \hline
+3 & userId & uuid & FK & Khách hàng \\ \hline
+4 & reason & text & not null & Lý do đổi/trả \\ \hline
+5 & status & enum & not null & Trạng thái xử lý \\ \hline
+6 & adminNote & text & & Ghi chú của quản trị \\ \hline
+7 & resolvedAt & timestamp & & Thời điểm xử lý xong \\ \hline
+\end{dbtable}
+
+\begin{dbtable}{Bảng Banner --- banner trang chủ}\label{tab:db-banner}
+1 & id & text & PK & Định danh banner \\ \hline
+2 & title & text & not null & Tiêu đề \\ \hline
+3 & imageUrl & text & not null & Ảnh banner \\ \hline
+4 & linkUrl & text & & Liên kết khi nhấn \\ \hline
+5 & sortOrder & int & not null & Thứ tự hiển thị \\ \hline
+6 & isActive & boolean & not null & Đang hiển thị \\ \hline
+\end{dbtable}
+
+\subsection{Các kiểu liệt kê (enum)}
+
+Bên cạnh các bảng, cơ sở dữ liệu sử dụng một số kiểu liệt kê (enum) để biểu diễn các giá trị có
+tập hợp cố định, giúp ràng buộc dữ liệu chặt chẽ ngay ở tầng cơ sở dữ liệu. Bảng~\ref{tab:enums}
+liệt kê các enum và giá trị tương ứng.
+
+\begin{longtable}{|>{\raggedright\arraybackslash}p{0.26\linewidth}|>{\raggedright\arraybackslash}p{0.66\linewidth}|}
+\caption{Các kiểu liệt kê (enum) trong cơ sở dữ liệu}\label{tab:enums}\\
+\hline
+\rowcolor{gray!12}\textbf{Tên enum} & \textbf{Các giá trị} \\ \hline
+\endfirsthead
+\hline
+\rowcolor{gray!12}\textbf{Tên enum} & \textbf{Các giá trị} \\ \hline
+\endhead
+UserRole & USER, ADMIN \\ \hline
+OrderStatus & PENDING, CONFIRMED, PACKING, SHIPPING, COMPLETED, CANCELED \\ \hline
+PaymentMethod & COD, BANK\_TRANSFER, PAYOS \\ \hline
+PaymentStatus & UNPAID, PAID, REFUNDED \\ \hline
+ProductStatus & DRAFT, ACTIVE, ARCHIVED \\ \hline
+Gender & BOY, GIRL, UNISEX \\ \hline
+AgeRange & NEWBORN\_0\_1, TODDLER\_1\_3, KID\_3\_6, KID\_6\_12 \\ \hline
+InventoryReason & MANUAL\_ADD, MANUAL\_REMOVE, ORDER\_RESERVE, ORDER\_CANCEL, STOCK\_TAKE \\ \hline
+ReviewStatus & PENDING, APPROVED, REJECTED \\ \hline
+DiscountType & PERCENT, FIXED \\ \hline
+ReturnStatus & REQUESTED, APPROVED, REJECTED, REFUNDED \\ \hline
+\end{longtable}
+
+\subsection{Ràng buộc duy nhất và chỉ mục}
+
+Để bảo đảm tính toàn vẹn và tối ưu hiệu năng truy vấn, cơ sở dữ liệu định nghĩa các ràng buộc
+duy nhất (unique) và chỉ mục (index) trên những cột được truy vấn thường xuyên. Bảng~\ref{tab:indexes}
+tổng hợp các ràng buộc và chỉ mục tiêu biểu.
+
+\begin{longtable}{|>{\raggedright\arraybackslash}p{0.255\linewidth}|>{\raggedright\arraybackslash}p{0.32\linewidth}|>{\raggedright\arraybackslash}p{0.32\linewidth}|}
+\caption{Ràng buộc duy nhất và chỉ mục tiêu biểu}\label{tab:indexes}\\
+\hline
+\rowcolor{gray!12}\textbf{Bảng} & \textbf{Ràng buộc duy nhất} & \textbf{Chỉ mục} \\ \hline
+\endfirsthead
+\hline
+\rowcolor{gray!12}\textbf{Bảng} & \textbf{Ràng buộc duy nhất} & \textbf{Chỉ mục} \\ \hline
+\endhead
+User & email & --- \\ \hline
+Category & slug & parentId, slug \\ \hline
+Product & slug & (categoryId, status), (status, createdAt), slug \\ \hline
+ProductVariant & sku & productId, sku \\ \hline
+Order & orderCode, payosOrderCode & (userId, createdAt), (status, createdAt), (status, paymentStatus, paymentExpiresAt) \\ \hline
+Review & (userId, productId) & (productId, status), (status, createdAt) \\ \hline
+WishlistItem & (userId, productId) & (userId, createdAt) \\ \hline
+Voucher & code & code, (isActive, startsAt, endsAt) \\ \hline
+VoucherRedemption & orderId & voucherId, userId \\ \hline
+FlashSaleItem & (flashSaleId, productId) & productId \\ \hline
+ReturnRequest & orderId & (status, createdAt) \\ \hline
+\end{longtable}
+
+\section{Xây dựng ứng dụng}
+
+\subsection{Thư viện và công cụ sử dụng}
+
+Bảng~\ref{tab:libs} liệt kê các thư viện và công cụ chính được sử dụng trong quá trình xây dựng
+hệ thống.
+
+\begin{longtable}{|>{\raggedright\arraybackslash}p{0.30\linewidth}|>{\raggedright\arraybackslash}p{0.62\linewidth}|}
+\caption{Danh sách thư viện và công cụ sử dụng}\label{tab:libs}\\
+\hline
+\rowcolor{gray!12}\textbf{Thư viện / Công cụ} & \textbf{Vai trò} \\ \hline
+\endfirsthead
+\hline
+\rowcolor{gray!12}\textbf{Thư viện / Công cụ} & \textbf{Vai trò} \\ \hline
+\endhead
+Next.js 14 & Framework full-stack (App Router, RSC, Server Actions) \\ \hline
+React 18 & Thư viện xây dựng giao diện \\ \hline
+TypeScript & Ngôn ngữ lập trình với kiểu tĩnh \\ \hline
+Prisma & ORM truy vấn cơ sở dữ liệu \\ \hline
+PostgreSQL / Supabase & Cơ sở dữ liệu và hạ tầng backend \\ \hline
+Tailwind CSS & Framework CSS utility-first \\ \hline
+Zustand & Quản lý trạng thái phía client \\ \hline
+React Hook Form + Zod & Quản lý và kiểm tra biểu mẫu \\ \hline
+@payos/node & SDK tích hợp cổng thanh toán PayOS \\ \hline
+Resend & Gửi email giao dịch \\ \hline
+Upstash Redis & Giới hạn tần suất truy cập \\ \hline
+SheetJS (xlsx) & Xuất báo cáo Excel \\ \hline
+Recharts & Vẽ biểu đồ báo cáo \\ \hline
+dnd-kit & Kéo thả sắp xếp banner \\ \hline
+Vitest & Kiểm thử đơn vị \\ \hline
+Playwright & Kiểm thử đầu cuối (E2E) \\ \hline
+Vercel & Nền tảng triển khai \\ \hline
+\end{longtable}
+
+\subsection{Kết quả đạt được}
+
+Hệ thống đã được xây dựng hoàn chỉnh với đầy đủ các chức năng đặt ra cho cả khu vực bán hàng
+và khu vực quản trị. Giao diện được thiết kế theo phong cách hiện đại, thân thiện với phụ huynh,
+hiển thị tốt trên nhiều kích thước màn hình. Phần dưới đây trình bày một số giao diện chính của
+hệ thống.
+
+\subsection{Giao diện các chức năng chính}
+
+\screenshot{figures/screenshots/home.png}{0.9}{Giao diện trang chủ}{fig:home}
+\screenshot{figures/screenshots/login.png}{0.9}{Giao diện trang đăng nhập}{fig:login}
+\screenshot{figures/screenshots/register.png}{0.9}{Giao diện trang đăng ký}{fig:register}
+\screenshot{figures/screenshots/products.png}{0.9}{Giao diện trang danh sách sản phẩm}{fig:products}
+\screenshot{figures/screenshots/product-detail.png}{0.9}{Giao diện trang chi tiết sản phẩm}{fig:product-detail}
+\screenshot{figures/screenshots/cart.png}{0.9}{Giao diện trang giỏ hàng}{fig:cart}
+\screenshot{figures/screenshots/checkout.png}{0.9}{Giao diện trang thanh toán}{fig:checkout}
+\screenshot{figures/screenshots/account-orders.png}{0.9}{Giao diện trang đơn hàng của khách hàng}{fig:account-orders}
+\screenshot{figures/screenshots/account-wishlist.png}{0.9}{Giao diện trang danh sách yêu thích}{fig:account-wishlist}
+
+Khu vực quản trị cung cấp các trang quản lý nghiệp vụ cho người bán. Một số giao diện quản trị
+chính được trình bày dưới đây.
+
+\screenshot{figures/screenshots/admin-products.png}{0.9}{Giao diện trang quản trị sản phẩm}{fig:admin-products}
+\screenshot{figures/screenshots/admin-inventory.png}{0.9}{Giao diện trang quản trị tồn kho}{fig:admin-inventory}
+\screenshot{figures/screenshots/admin-orders.png}{0.9}{Giao diện trang quản trị đơn hàng}{fig:admin-orders}
+\screenshot{figures/screenshots/admin-customers.png}{0.9}{Giao diện trang quản trị khách hàng}{fig:admin-customers}
+\screenshot{figures/screenshots/admin-vouchers.png}{0.9}{Giao diện trang quản lý mã giảm giá}{fig:admin-vouchers}
+\screenshot{figures/screenshots/admin-flash-sales.png}{0.9}{Giao diện trang quản lý flash sale}{fig:admin-flash-sales}
+\screenshot{figures/screenshots/admin-banners.png}{0.9}{Giao diện trang quản lý banner trang chủ}{fig:admin-banners}
+\screenshot{figures/screenshots/admin-reports.png}{0.9}{Giao diện trang thống kê doanh thu}{fig:admin-reports}
+
+\section{Kiểm thử}
+
+\subsection{Xây dựng một số testcase và kết quả đạt được}
+
+Hệ thống được kiểm thử ở hai mức: kiểm thử đơn vị (unit test) bằng Vitest cho các hàm nghiệp vụ
+thuần (tính giá, áp dụng voucher, xử lý thanh toán PayOS) và kiểm thử đầu cuối bằng Playwright
+cho các luồng người dùng quan trọng. Bảng~\ref{tab:testcases} trình bày một số ca kiểm thử tiêu
+biểu và kết quả.
+
+\begin{longtable}{|c|>{\raggedright\arraybackslash}p{0.30\linewidth}|>{\raggedright\arraybackslash}p{0.30\linewidth}|c|}
+\caption{Một số ca kiểm thử chức năng}\label{tab:testcases}\\
+\hline
+\rowcolor{gray!12}\textbf{Mã} & \textbf{Nội dung kiểm thử} & \textbf{Kết quả mong đợi} & \textbf{Trạng thái} \\ \hline
+\endfirsthead
+\hline
+\rowcolor{gray!12}\textbf{Mã} & \textbf{Nội dung kiểm thử} & \textbf{Kết quả mong đợi} & \textbf{Trạng thái} \\ \hline
+\endhead
+TC01 & Tính giá hiệu lực khi có flash sale & Trả về giá khuyến mãi & Đạt \\ \hline
+TC02 & Áp dụng voucher giảm theo phần trăm & Giảm đúng số tiền, không vượt mức tối đa & Đạt \\ \hline
+TC03 & Áp dụng voucher hết hạn & Từ chối, báo lỗi & Đạt \\ \hline
+TC04 & Đặt hàng khi đủ tồn kho & Tạo đơn, trừ tồn kho & Đạt \\ \hline
+TC05 & Đặt hàng khi sản phẩm hết hàng & Hủy giao dịch, báo lỗi & Đạt \\ \hline
+TC06 & Xác nhận thanh toán PayOS hợp lệ & Cập nhật trạng thái đã thanh toán & Đạt \\ \hline
+TC07 & Webhook PayOS gọi lặp lại & Idempotent, không xử lý trùng & Đạt \\ \hline
+TC08 & Hủy đơn PayOS quá hạn & Hủy đơn, hoàn trả tồn kho & Đạt \\ \hline
+TC09 & Đăng nhập sai mật khẩu nhiều lần & Bị giới hạn truy cập & Đạt \\ \hline
+TC10 & Kiểm duyệt đánh giá & Cập nhật điểm trung bình sản phẩm & Đạt \\ \hline
+\end{longtable}
+
+\section{Triển khai}
+
+Hệ thống được triển khai trên nền tảng Vercel theo quy trình tích hợp và triển khai liên tục: mỗi
+khi mã nguồn được đẩy lên kho, Vercel tự động build và triển khai phiên bản mới. Cơ sở dữ liệu
+PostgreSQL được vận hành trên Supabase. Các biến môi trường (khóa kết nối cơ sở dữ liệu, khóa
+PayOS, Resend, Upstash) được cấu hình an toàn trong bảng điều khiển của Vercel. Một tác vụ cron
+được cấu hình chạy định kỳ (mỗi 15 phút) để quét và hủy các đơn hàng PayOS chưa thanh toán
+quá hạn, đồng thời hoàn trả tồn kho. Bảng~\ref{tab:deploy} tóm tắt môi trường triển khai.
+
+\begin{longtable}{|>{\raggedright\arraybackslash}p{0.32\linewidth}|>{\raggedright\arraybackslash}p{0.60\linewidth}|}
+\caption{Môi trường triển khai hệ thống}\label{tab:deploy}\\
+\hline
+\rowcolor{gray!12}\textbf{Thành phần} & \textbf{Mô tả} \\ \hline
+\endfirsthead
+\hline
+\rowcolor{gray!12}\textbf{Thành phần} & \textbf{Mô tả} \\ \hline
+\endhead
+Ứng dụng web & Next.js triển khai trên Vercel (serverless) \\ \hline
+Cơ sở dữ liệu & PostgreSQL trên Supabase \\ \hline
+Lưu trữ ảnh & Supabase Storage \\ \hline
+Tác vụ định kỳ & Vercel Cron (hủy đơn quá hạn, mỗi 15 phút) \\ \hline
+Tên miền & Cấu hình qua Vercel \\ \hline
+\end{longtable}

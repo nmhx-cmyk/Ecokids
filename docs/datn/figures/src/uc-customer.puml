@@ -1,0 +1,56 @@
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontName "Be Vietnam Pro"
+skinparam defaultFontSize 13
+left to right direction
+
+actor "Khách hàng" as KH
+
+rectangle "Chức năng Khách hàng" {
+  usecase "Đăng ký" as R
+  usecase "Đăng nhập" as L
+  usecase "Đăng xuất" as LO
+  usecase "Xem danh sách sản phẩm" as P1
+  usecase "Tìm kiếm sản phẩm" as P2
+  usecase "Lọc sản phẩm" as P3
+  usecase "Xem chi tiết sản phẩm" as P4
+  usecase "Quản lý giỏ hàng" as C1
+  usecase "Quản lý danh sách yêu thích" as W1
+  usecase "So sánh sản phẩm" as CMP
+  usecase "Tạo đơn hàng" as O1
+  usecase "Áp dụng mã giảm giá" as O2
+  usecase "Đặt hàng" as O3
+  usecase "Thanh toán đơn hàng" as O4
+  usecase "Hủy đơn hàng" as O5
+  usecase "Xem lịch sử đơn hàng" as O6
+  usecase "Yêu cầu đổi / trả hàng" as O7
+  usecase "Đánh giá, bình luận sản phẩm" as RV
+  usecase "Quản lý thông tin cá nhân" as A1
+  usecase "Quản lý địa chỉ giao hàng" as A2
+}
+
+KH --> R
+KH --> L
+KH --> LO
+KH --> P1
+KH --> P2
+KH --> P4
+KH --> C1
+KH --> W1
+KH --> CMP
+KH --> O3
+KH --> O6
+KH --> O7
+KH --> RV
+KH --> A1
+KH --> A2
+
+P1 ..> P2 : <<extend>>
+P1 ..> P3 : <<extend>>
+O3 ..> O1 : <<include>>
+O3 ..> O4 : <<include>>
+O3 ..> O2 : <<extend>>
+A1 ..> A2 : <<include>>
+@enduml

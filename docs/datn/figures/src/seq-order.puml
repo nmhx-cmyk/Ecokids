@@ -1,0 +1,43 @@
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontName "Be Vietnam Pro"
+skinparam defaultFontSize 12
+
+actor "Khách hàng" as KH
+participant "Giao diện\nthanh toán" as UI
+participant "Server Action\nplaceOrder" as SA
+database "PostgreSQL" as DB
+participant "PayOS" as PG
+participant "Webhook" as WH
+
+KH -> UI : Xác nhận đặt hàng
+UI -> SA : placeOrder(items, địa chỉ,\nphương thức, mã giảm giá)
+SA -> SA : Xác thực phiên + kiểm tra\ndữ liệu (Zod)
+
+SA -> DB : BEGIN (Serializable)
+SA -> DB : Khóa biến thể FOR UPDATE
+DB --> SA : Tồn kho hiện tại
+SA -> SA : Kiểm tra tồn kho, tính giá\n(ưu tiên flash sale), kiểm tra voucher
+SA -> DB : Tạo đơn (PENDING), trừ tồn kho,\nghi nhật ký kho, tiêu thụ voucher
+SA -> DB : COMMIT
+
+alt Thanh toán PayOS
+  SA -> PG : Tạo liên kết thanh toán
+  PG --> SA : checkoutUrl + paymentLinkId
+  SA -> DB : Lưu liên kết + hạn thanh toán
+  note right of SA : Nếu tạo link lỗi:\nhủy đơn + hoàn tồn kho
+  SA --> UI : Trả checkoutUrl
+  UI -> KH : Chuyển tới trang thanh toán PayOS
+  KH -> PG : Quét QR / chuyển khoản
+  PG -> WH : Gọi webhook (kết quả thanh toán)
+  WH -> WH : Xác thực chữ ký HMAC
+  WH -> DB : markPayosOrderPaid\n(idempotent: total khớp & đang UNPAID -> PAID)
+  WH -> KH : Gửi email xác nhận thanh toán
+else Thanh toán COD
+  SA --> UI : Trả mã đơn hàng
+  UI -> KH : Hiển thị trang xác nhận đơn
+  SA -> KH : Gửi email xác nhận đặt hàng
+end
+@enduml

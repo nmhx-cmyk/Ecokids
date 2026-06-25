@@ -1,0 +1,896 @@
+\chapter{Khảo sát và phân tích yêu cầu}
+\label{ch:req}
+
+\section{Khảo sát hiện trạng}
+
+Hiện nay, phần lớn các cửa hàng thời trang trẻ em quy mô vừa và nhỏ tại Việt Nam vẫn đang
+kinh doanh chủ yếu qua ba kênh: bán hàng trực tiếp tại cửa hàng, bán qua mạng xã hội
+(Facebook, Instagram, TikTok) và bán qua các sàn thương mại điện tử trung gian. Qua khảo sát
+thực tế, mô hình này bộc lộ nhiều hạn chế:
+
+\begin{itemize}
+  \item \textbf{Thông tin sản phẩm phân tán:} sản phẩm được đăng rải rác trên nhiều bài viết,
+  không có cấu trúc danh mục rõ ràng, khó tra cứu và so sánh.
+  \item \textbf{Khó quản lý tồn kho theo biến thể:} quần áo trẻ em có nhiều kích cỡ và màu sắc;
+  việc theo dõi số lượng tồn của từng biến thể bằng phương pháp thủ công dễ sai sót, dẫn đến tình
+  trạng bán quá số lượng tồn (oversell).
+  \item \textbf{Quy trình đặt hàng thủ công:} đơn hàng được chốt qua tin nhắn, nhân viên ghi
+  chép lại bằng tay, dễ nhầm lẫn và mất thời gian, khó tổng hợp doanh thu.
+  \item \textbf{Phụ thuộc nền tảng trung gian:} khi bán qua sàn, cửa hàng bị động về thương hiệu,
+  dữ liệu khách hàng và chính sách phí.
+  \item \textbf{Thiếu công cụ chăm sóc khách hàng:} khó triển khai chương trình khuyến mãi, tích
+  điểm, thu thập đánh giá một cách có hệ thống.
+\end{itemize}
+
+Từ thực trạng trên, việc xây dựng một website thương mại điện tử riêng cho thương hiệu
+\brandName{} là cần thiết, nhằm tập trung hóa việc quản lý sản phẩm, tồn kho, đơn hàng và
+khách hàng, đồng thời mang lại trải nghiệm mua sắm chuyên nghiệp, chủ động về thương hiệu và
+dữ liệu.
+
+\subsection{So sánh các kênh bán hàng hiện nay}
+
+Để xác định hướng đi phù hợp cho \brandName{}, phần này so sánh các kênh bán hàng phổ biến mà
+một cửa hàng thời trang trẻ em có thể lựa chọn. Mỗi kênh có những ưu, nhược điểm riêng, được
+tổng hợp trong Bảng~\ref{tab:channels}.
+
+\begin{itemize}
+  \item \textbf{Bán tại cửa hàng truyền thống:} tạo được trải nghiệm trực tiếp (thử đồ, xem chất
+  liệu) nhưng giới hạn về phạm vi khách hàng địa lý và thời gian mở cửa, khó mở rộng quy mô.
+  \item \textbf{Bán qua mạng xã hội (Facebook, Instagram, TikTok):} dễ bắt đầu, chi phí thấp,
+  tiếp cận nhanh nhưng thông tin sản phẩm phân tán theo dòng thời gian, không có cấu trúc danh
+  mục, khó quản lý tồn kho và đơn hàng tập trung, phụ thuộc thuật toán hiển thị của nền tảng.
+  \item \textbf{Bán qua sàn thương mại điện tử trung gian (Shopee, Lazada, TikTok Shop):} có sẵn
+  lượng truy cập lớn và hạ tầng thanh toán/vận chuyển, nhưng cửa hàng phải chịu phí hoa hồng,
+  cạnh tranh giá gay gắt, bị động về thương hiệu và không sở hữu dữ liệu khách hàng.
+  \item \textbf{Website thương mại điện tử riêng:} chủ động hoàn toàn về thương hiệu, dữ liệu khách
+  hàng, chính sách giá và khuyến mãi; quản lý sản phẩm, tồn kho, đơn hàng tập trung. Hạn chế là
+  cần đầu tư xây dựng ban đầu và tự thu hút lưu lượng truy cập.
+\end{itemize}
+
+\begin{longtable}{|>{\raggedright\arraybackslash}p{0.20\linewidth}|>{\raggedright\arraybackslash}p{0.36\linewidth}|>{\raggedright\arraybackslash}p{0.34\linewidth}|}
+\caption{So sánh các kênh bán hàng}\label{tab:channels}\\
+\hline
+\rowcolor{gray!12}\textbf{Kênh bán} & \textbf{Ưu điểm} & \textbf{Nhược điểm} \\ \hline
+\endfirsthead
+\hline
+\rowcolor{gray!12}\textbf{Kênh bán} & \textbf{Ưu điểm} & \textbf{Nhược điểm} \\ \hline
+\endhead
+Cửa hàng truyền thống & Trải nghiệm trực tiếp, tạo niềm tin & Giới hạn địa lý, khó mở rộng \\ \hline
+Mạng xã hội & Dễ bắt đầu, chi phí thấp, lan tỏa nhanh & Thông tin phân tán, khó quản lý kho/đơn, phụ thuộc nền tảng \\ \hline
+Sàn TMĐT trung gian & Sẵn lưu lượng, hạ tầng thanh toán/vận chuyển & Phí hoa hồng, cạnh tranh giá, không sở hữu dữ liệu khách hàng \\ \hline
+Website riêng & Chủ động thương hiệu, dữ liệu, khuyến mãi; quản lý tập trung & Cần đầu tư ban đầu, tự thu hút lưu lượng \\ \hline
+\end{longtable}
+
+Qua phân tích, kết hợp một website thương mại điện tử riêng với các kênh mạng xã hội là hướng đi
+cân bằng: website đóng vai trò ``ngôi nhà'' chính thức của thương hiệu --- nơi quản lý tập trung
+sản phẩm, đơn hàng, khuyến mãi và chăm sóc khách hàng --- trong khi mạng xã hội đảm nhiệm việc
+thu hút và dẫn khách về website. Đề tài \brandName{} tập trung xây dựng thành phần website này.
+
+\section{Tổng quan chức năng}
+
+Hệ thống \brandName{} có hai tác nhân (actor) chính:
+
+\begin{itemize}
+  \item \textbf{Khách hàng:} người dùng cuối thực hiện mua sắm trên website.
+  \item \textbf{Quản trị viên:} người quản lý vận hành toàn bộ hoạt động kinh doanh của cửa hàng
+  trên hệ thống.
+\end{itemize}
+
+\subsection{Biểu đồ use case tổng quan}
+
+Biểu đồ use case tổng quan ở Hình~\ref{fig:uc-overview} thể hiện các nhóm chức năng chính của
+hai tác nhân trong hệ thống.
+
+\fig{figures/diagrams/uc-overview.pdf}{0.62}{\caption{Biểu đồ use case tổng quan}\label{fig:uc-overview}}
+
+\subsection{Biểu đồ các ca sử dụng khách hàng}
+
+Hình~\ref{fig:uc-customer} mô tả chi tiết các ca sử dụng của tác nhân Khách hàng.
+
+\fig{figures/diagrams/uc-customer.pdf}{0.95}{\caption{Biểu đồ use case khách hàng}\label{fig:uc-customer}}
+
+\subsection{Biểu đồ các ca sử dụng quản trị viên}
+
+Hình~\ref{fig:uc-admin} mô tả chi tiết các ca sử dụng của tác nhân Quản trị viên.
+
+\fig{figures/diagrams/uc-admin.pdf}{0.9}{\caption{Biểu đồ use case quản trị viên}\label{fig:uc-admin}}
+
+\subsection{Phân tích quy trình nghiệp vụ}
+
+Phần này phân tích ba quy trình nghiệp vụ tiêu biểu của hệ thống bằng biểu đồ hoạt động.
+
+\textbf{Quy trình đặt hàng và thanh toán.} Đây là quy trình cốt lõi của hệ thống, bao gồm việc
+kiểm tra tồn kho, tạo đơn hàng và xử lý thanh toán theo hai hình thức COD và PayOS
+(Hình~\ref{fig:bp-order}).
+
+\fig{figures/diagrams/bp-order.pdf}{0.62}{\caption{Quy trình nghiệp vụ Đặt hàng và thanh toán}\label{fig:bp-order}}
+
+\textbf{Quy trình quản lý sản phẩm.} Mô tả các bước quản trị viên thêm mới hoặc cập nhật sản
+phẩm cùng các biến thể và tồn kho (Hình~\ref{fig:bp-product}).
+
+\fig{figures/diagrams/bp-product.pdf}{0.55}{\caption{Quy trình nghiệp vụ Quản lý sản phẩm}\label{fig:bp-product}}
+
+\textbf{Quy trình xử lý đổi/trả hàng.} Mô tả luồng khách hàng gửi yêu cầu đổi/trả và quản trị
+viên xử lý, bao gồm cả nghiệp vụ hoàn tiền và hoàn trả tồn kho (Hình~\ref{fig:bp-return}).
+
+\fig{figures/diagrams/bp-return.pdf}{0.6}{\caption{Quy trình nghiệp vụ Xử lý đổi/trả hàng}\label{fig:bp-return}}
+
+\section{Đặc tả chức năng}
+
+\subsection{Các ca sử dụng của người mua}
+
+Bảng~\ref{tab:uc-customer-list} liệt kê danh sách các ca sử dụng của tác nhân Khách hàng.
+
+\begin{longtable}{|c|>{\raggedright\arraybackslash}p{0.30\linewidth}|>{\raggedright\arraybackslash}p{0.50\linewidth}|}
+\caption{Danh sách use case của Khách hàng}\label{tab:uc-customer-list}\\
+\hline
+\rowcolor{gray!12}\textbf{Mã} & \textbf{Tên use case} & \textbf{Mô tả ngắn} \\ \hline
+\endfirsthead
+\hline
+\rowcolor{gray!12}\textbf{Mã} & \textbf{Tên use case} & \textbf{Mô tả ngắn} \\ \hline
+\endhead
+UC01 & Đăng ký & Tạo tài khoản khách hàng mới \\ \hline
+UC02 & Đăng nhập & Đăng nhập vào hệ thống \\ \hline
+UC03 & Đăng xuất & Thoát khỏi phiên đăng nhập \\ \hline
+UC04 & Xem danh sách sản phẩm & Duyệt sản phẩm theo danh mục \\ \hline
+UC05 & Tìm kiếm sản phẩm & Tìm sản phẩm theo từ khóa \\ \hline
+UC06 & Lọc sản phẩm & Lọc theo độ tuổi, giới tính, giá, kích cỡ, màu \\ \hline
+UC07 & Xem chi tiết sản phẩm & Xem thông tin, biến thể, đánh giá \\ \hline
+UC08 & Quản lý giỏ hàng & Thêm/sửa/xóa sản phẩm trong giỏ \\ \hline
+UC09 & Quản lý danh sách yêu thích & Lưu và bỏ lưu sản phẩm yêu thích \\ \hline
+UC10 & So sánh sản phẩm & So sánh thông số nhiều sản phẩm \\ \hline
+UC11 & Tạo đơn hàng & Khởi tạo đơn từ giỏ hàng \\ \hline
+UC12 & Áp dụng mã giảm giá & Nhập và áp dụng voucher \\ \hline
+UC13 & Đặt hàng & Xác nhận đặt đơn hàng \\ \hline
+UC14 & Thanh toán đơn hàng & Thanh toán COD hoặc PayOS \\ \hline
+UC15 & Hủy đơn hàng & Hủy đơn khi còn cho phép \\ \hline
+UC16 & Xem lịch sử đơn hàng & Theo dõi đơn và trạng thái \\ \hline
+UC17 & Yêu cầu đổi/trả hàng & Gửi yêu cầu đổi/trả đơn đã hoàn thành \\ \hline
+UC18 & Đánh giá, bình luận sản phẩm & Gửi đánh giá và bình luận \\ \hline
+UC19 & Quản lý thông tin cá nhân & Xem và cập nhật hồ sơ \\ \hline
+UC20 & Quản lý địa chỉ giao hàng & Thêm/sửa/xóa địa chỉ \\ \hline
+\end{longtable}
+
+\subsection{Các ca sử dụng của người quản trị}
+
+Bảng~\ref{tab:uc-admin-list} liệt kê danh sách các ca sử dụng của tác nhân Quản trị viên.
+
+\begin{longtable}{|c|>{\raggedright\arraybackslash}p{0.30\linewidth}|>{\raggedright\arraybackslash}p{0.50\linewidth}|}
+\caption{Danh sách use case của Quản trị viên}\label{tab:uc-admin-list}\\
+\hline
+\rowcolor{gray!12}\textbf{Mã} & \textbf{Tên use case} & \textbf{Mô tả ngắn} \\ \hline
+\endfirsthead
+\hline
+\rowcolor{gray!12}\textbf{Mã} & \textbf{Tên use case} & \textbf{Mô tả ngắn} \\ \hline
+\endhead
+UC21 & Đăng nhập quản trị & Đăng nhập với quyền quản trị \\ \hline
+UC22 & Quản lý danh mục sản phẩm & Thêm/sửa/xóa danh mục \\ \hline
+UC23 & Quản lý sản phẩm \& biến thể & Quản lý sản phẩm, biến thể, hình ảnh \\ \hline
+UC24 & Quản lý tồn kho & Điều chỉnh và theo dõi tồn kho \\ \hline
+UC25 & Quản lý đơn hàng & Xác nhận, cập nhật trạng thái, mã vận đơn \\ \hline
+UC26 & Xử lý đổi/trả hàng & Duyệt, từ chối, hoàn tiền \\ \hline
+UC27 & Quản lý mã giảm giá & Thêm/sửa/xóa voucher \\ \hline
+UC28 & Quản lý flash sale & Tạo và quản lý chương trình flash sale \\ \hline
+UC29 & Quản lý banner \& nội dung & Quản lý banner trang chủ \\ \hline
+UC30 & Quản lý tài khoản khách hàng & Xem danh sách và chi tiết khách hàng \\ \hline
+UC31 & Kiểm duyệt đánh giá & Duyệt/từ chối/phản hồi đánh giá \\ \hline
+UC32 & Thống kê, báo cáo doanh thu & Xem báo cáo và xuất Excel \\ \hline
+\end{longtable}
+
+\section{Đặc tả chi tiết các ca sử dụng của Khách hàng}
+
+\subsection{Đặc tả use case ``Đăng ký''}
+
+\begin{ucspec}{Đặc tả use case ``Đăng ký''}
+\textbf{Mã use case} & UC01 \\ \hline
+\textbf{Tên use case} & Đăng ký \\ \hline
+\textbf{Tác nhân} & Khách truy cập \\ \hline
+\textbf{Mục đích} & Cho phép người dùng tạo tài khoản mới trên hệ thống \\ \hline
+\textbf{Tiền điều kiện} & Người dùng chưa có tài khoản \\ \hline
+\textbf{Hậu điều kiện} & Tài khoản mới được tạo; người dùng có thể đăng nhập \\ \hline
+\textbf{Luồng sự kiện chính} &
+1. Khách chọn chức năng ``Đăng ký''. \newline
+2. Hệ thống hiển thị biểu mẫu đăng ký. \newline
+3. Khách nhập email, mật khẩu, họ tên và gửi biểu mẫu. \newline
+4. Hệ thống kiểm tra hợp lệ và email chưa tồn tại. \newline
+5. Hệ thống tạo tài khoản qua Supabase Auth và gửi email xác nhận. \newline
+6. Khách xác nhận email và được chuyển tới trang đăng nhập. \\ \hline
+\textbf{Luồng thay thế} &
+4a. Dữ liệu không hợp lệ: hệ thống báo lỗi và yêu cầu nhập lại. \newline
+4b. Email đã tồn tại: hệ thống thông báo và đề nghị đăng nhập. \\ \hline
+\end{ucspec}
+
+Dữ liệu đầu vào của use case ``Đăng ký'' được mô tả trong Bảng~\ref{tab:reg-input}.
+
+\begin{longtable}{|c|>{\raggedright\arraybackslash}p{0.20\linewidth}|c|>{\raggedright\arraybackslash}p{0.34\linewidth}|}
+\caption{Dữ liệu đầu vào use case ``Đăng ký''}\label{tab:reg-input}\\
+\hline
+\rowcolor{gray!12}\textbf{STT} & \textbf{Trường} & \textbf{Bắt buộc} & \textbf{Điều kiện hợp lệ} \\ \hline
+\endfirsthead
+\hline
+\rowcolor{gray!12}\textbf{STT} & \textbf{Trường} & \textbf{Bắt buộc} & \textbf{Điều kiện hợp lệ} \\ \hline
+\endhead
+1 & Họ tên & Có & Không để trống \\ \hline
+2 & Email & Có & Đúng định dạng email, chưa tồn tại \\ \hline
+3 & Mật khẩu & Có & Tối thiểu 6 ký tự \\ \hline
+4 & Xác nhận mật khẩu & Có & Trùng khớp với mật khẩu \\ \hline
+\end{longtable}
+
+\subsection{Đặc tả use case ``Đăng nhập''}
+
+\begin{ucspec}{Đặc tả use case ``Đăng nhập''}
+\textbf{Mã use case} & UC02 \\ \hline
+\textbf{Tên use case} & Đăng nhập \\ \hline
+\textbf{Tác nhân} & Khách hàng \\ \hline
+\textbf{Mục đích} & Xác thực và bắt đầu phiên làm việc của người dùng \\ \hline
+\textbf{Tiền điều kiện} & Người dùng đã có tài khoản \\ \hline
+\textbf{Hậu điều kiện} & Người dùng đăng nhập thành công, phiên được thiết lập \\ \hline
+\textbf{Luồng sự kiện chính} &
+1. Khách chọn ``Đăng nhập''. \newline
+2. Hệ thống hiển thị biểu mẫu đăng nhập. \newline
+3. Khách nhập email và mật khẩu. \newline
+4. Hệ thống xác thực thông tin qua Supabase Auth. \newline
+5. Đăng nhập thành công, chuyển về trang trước đó hoặc trang chủ. \\ \hline
+\textbf{Luồng thay thế} &
+4a. Sai email hoặc mật khẩu: hệ thống thông báo lỗi. \newline
+4b. Vượt quá số lần thử cho phép: hệ thống tạm giới hạn truy cập (rate limit). \\ \hline
+\end{ucspec}
+
+\subsection{Đặc tả use case ``Tìm kiếm sản phẩm''}
+
+\begin{ucspec}{Đặc tả use case ``Tìm kiếm sản phẩm''}
+\textbf{Mã use case} & UC05 \\ \hline
+\textbf{Tên use case} & Tìm kiếm sản phẩm \\ \hline
+\textbf{Tác nhân} & Khách hàng \\ \hline
+\textbf{Mục đích} & Tìm sản phẩm theo từ khóa \\ \hline
+\textbf{Tiền điều kiện} & Không \\ \hline
+\textbf{Hậu điều kiện} & Hiển thị danh sách sản phẩm phù hợp \\ \hline
+\textbf{Luồng sự kiện chính} &
+1. Khách nhập từ khóa vào ô tìm kiếm. \newline
+2. Hệ thống chuẩn hóa từ khóa, loại bỏ dấu (\texttt{unaccent}). \newline
+3. Hệ thống truy vấn tìm kiếm toàn văn trên cơ sở dữ liệu. \newline
+4. Hệ thống hiển thị danh sách sản phẩm phù hợp, sắp theo độ liên quan. \\ \hline
+\textbf{Luồng thay thế} &
+4a. Không có kết quả: hệ thống hiển thị thông báo ``không tìm thấy sản phẩm''. \\ \hline
+\end{ucspec}
+
+\subsection{Đặc tả use case ``Lọc danh sách sản phẩm''}
+
+\begin{ucspec}{Đặc tả use case ``Lọc danh sách sản phẩm''}
+\textbf{Mã use case} & UC06 \\ \hline
+\textbf{Tên use case} & Lọc danh sách sản phẩm \\ \hline
+\textbf{Tác nhân} & Khách hàng \\ \hline
+\textbf{Mục đích} & Thu hẹp danh sách theo nhiều tiêu chí \\ \hline
+\textbf{Tiền điều kiện} & Đang ở trang danh sách sản phẩm \\ \hline
+\textbf{Hậu điều kiện} & Danh sách được lọc theo tiêu chí đã chọn \\ \hline
+\textbf{Luồng sự kiện chính} &
+1. Khách chọn các tiêu chí lọc: danh mục, độ tuổi, giới tính, khoảng giá, kích cỡ, màu sắc. \newline
+2. Hệ thống cập nhật tham số lọc trên URL. \newline
+3. Hệ thống truy vấn và hiển thị danh sách sản phẩm thỏa điều kiện. \\ \hline
+\textbf{Luồng thay thế} &
+3a. Không có sản phẩm phù hợp: hiển thị thông báo và gợi ý bỏ bớt bộ lọc. \\ \hline
+\end{ucspec}
+
+\subsection{Đặc tả use case ``Quản lý giỏ hàng''}
+
+\begin{ucspec}{Đặc tả use case ``Quản lý giỏ hàng''}
+\textbf{Mã use case} & UC08 \\ \hline
+\textbf{Tên use case} & Quản lý giỏ hàng \\ \hline
+\textbf{Tác nhân} & Khách hàng \\ \hline
+\textbf{Mục đích} & Thêm, cập nhật, xóa sản phẩm trong giỏ trước khi đặt hàng \\ \hline
+\textbf{Tiền điều kiện} & Không \\ \hline
+\textbf{Hậu điều kiện} & Giỏ hàng được cập nhật \\ \hline
+\textbf{Luồng sự kiện chính} &
+1. Khách chọn biến thể (kích cỡ, màu) và thêm sản phẩm vào giỏ. \newline
+2. Hệ thống lưu giỏ hàng (Zustand, lưu cục bộ trên trình duyệt). \newline
+3. Khách có thể tăng/giảm số lượng hoặc xóa sản phẩm khỏi giỏ. \newline
+4. Hệ thống tính lại tổng tiền tạm tính. \\ \hline
+\textbf{Luồng thay thế} &
+3a. Số lượng vượt quá tồn kho: hệ thống giới hạn theo số lượng còn lại. \\ \hline
+\end{ucspec}
+
+\subsection{Đặc tả use case ``Quản lý danh sách yêu thích''}
+
+\begin{ucspec}{Đặc tả use case ``Quản lý danh sách yêu thích''}
+\textbf{Mã use case} & UC09 \\ \hline
+\textbf{Tên use case} & Quản lý danh sách yêu thích \\ \hline
+\textbf{Tác nhân} & Khách hàng (đã đăng nhập) \\ \hline
+\textbf{Mục đích} & Lưu lại các sản phẩm quan tâm để xem/mua sau \\ \hline
+\textbf{Tiền điều kiện} & Khách đã đăng nhập \\ \hline
+\textbf{Hậu điều kiện} & Danh sách yêu thích được cập nhật \\ \hline
+\textbf{Luồng sự kiện chính} &
+1. Khách nhấn biểu tượng trái tim trên sản phẩm. \newline
+2. Hệ thống lưu sản phẩm vào danh sách yêu thích của tài khoản. \newline
+3. Khách có thể xem trang yêu thích và bỏ lưu sản phẩm. \\ \hline
+\textbf{Luồng thay thế} &
+1a. Khách chưa đăng nhập: hệ thống yêu cầu đăng nhập. \\ \hline
+\end{ucspec}
+
+\subsection{Đặc tả use case ``So sánh sản phẩm''}
+
+\begin{ucspec}{Đặc tả use case ``So sánh sản phẩm''}
+\textbf{Mã use case} & UC10 \\ \hline
+\textbf{Tên use case} & So sánh sản phẩm \\ \hline
+\textbf{Tác nhân} & Khách hàng \\ \hline
+\textbf{Mục đích} & So sánh thông số của nhiều sản phẩm cạnh nhau \\ \hline
+\textbf{Tiền điều kiện} & Không \\ \hline
+\textbf{Hậu điều kiện} & Hiển thị bảng so sánh các sản phẩm đã chọn \\ \hline
+\textbf{Luồng sự kiện chính} &
+1. Khách thêm sản phẩm vào danh sách so sánh (tối đa 4 sản phẩm). \newline
+2. Hệ thống hiển thị thanh so sánh nổi. \newline
+3. Khách mở trang so sánh; hệ thống hiển thị bảng thông số đối chiếu. \\ \hline
+\textbf{Luồng thay thế} &
+1a. Vượt quá 4 sản phẩm: hệ thống thông báo giới hạn. \\ \hline
+\end{ucspec}
+
+\subsection{Đặc tả use case ``Tạo đơn hàng''}
+
+\begin{ucspec}{Đặc tả use case ``Tạo đơn hàng''}
+\textbf{Mã use case} & UC11 \\ \hline
+\textbf{Tên use case} & Tạo đơn hàng \\ \hline
+\textbf{Tác nhân} & Khách hàng \\ \hline
+\textbf{Mục đích} & Khởi tạo đơn hàng từ các sản phẩm trong giỏ \\ \hline
+\textbf{Tiền điều kiện} & Giỏ hàng có ít nhất một sản phẩm; khách đã đăng nhập \\ \hline
+\textbf{Hậu điều kiện} & Đơn hàng được tạo ở trạng thái chờ xác nhận \\ \hline
+\textbf{Luồng sự kiện chính} &
+1. Khách vào trang thanh toán. \newline
+2. Khách chọn địa chỉ giao hàng và phương thức thanh toán. \newline
+3. Hệ thống tính phí vận chuyển và tổng tiền. \newline
+4. Hệ thống kiểm tra tồn kho và tạo đơn hàng trong một giao dịch. \\ \hline
+\textbf{Luồng thay thế} &
+4a. Một sản phẩm hết hàng: hệ thống hủy giao dịch và thông báo. \\ \hline
+\end{ucspec}
+
+\subsection{Đặc tả use case ``Đặt hàng''}
+
+\begin{ucspec}{Đặc tả use case ``Đặt hàng''}
+\textbf{Mã use case} & UC13 \\ \hline
+\textbf{Tên use case} & Đặt hàng \\ \hline
+\textbf{Tác nhân} & Khách hàng \\ \hline
+\textbf{Mục đích} & Xác nhận và hoàn tất việc đặt đơn hàng \\ \hline
+\textbf{Tiền điều kiện} & Đơn hàng đã được tạo và hợp lệ \\ \hline
+\textbf{Hậu điều kiện} & Đơn hàng được ghi nhận; tồn kho được trừ tương ứng \\ \hline
+\textbf{Luồng sự kiện chính} &
+1. Khách xác nhận đặt hàng. \newline
+2. Hệ thống lưu đơn hàng, trừ tồn kho và sinh mã đơn hàng. \newline
+3. Nếu chọn PayOS, hệ thống tạo liên kết thanh toán. \newline
+4. Hệ thống gửi email xác nhận đặt hàng và hiển thị trang xác nhận. \\ \hline
+\textbf{Luồng thay thế} &
+3a. Tạo liên kết PayOS thất bại: hệ thống hủy đơn, hoàn tồn kho và báo lỗi. \\ \hline
+\end{ucspec}
+
+\subsection{Đặc tả use case ``Thanh toán đơn hàng''}
+
+\begin{ucspec}{Đặc tả use case ``Thanh toán đơn hàng''}
+\textbf{Mã use case} & UC14 \\ \hline
+\textbf{Tên use case} & Thanh toán đơn hàng \\ \hline
+\textbf{Tác nhân} & Khách hàng, Cổng PayOS \\ \hline
+\textbf{Mục đích} & Thanh toán trực tuyến cho đơn hàng \\ \hline
+\textbf{Tiền điều kiện} & Đơn hàng PayOS đã được tạo và chưa thanh toán \\ \hline
+\textbf{Hậu điều kiện} & Đơn hàng được đánh dấu đã thanh toán \\ \hline
+\textbf{Luồng sự kiện chính} &
+1. Khách được chuyển tới trang thanh toán của PayOS. \newline
+2. Khách quét mã QR / chuyển khoản để thanh toán. \newline
+3. PayOS gọi webhook thông báo kết quả; hệ thống xác thực chữ ký HMAC. \newline
+4. Hệ thống cập nhật trạng thái ``đã thanh toán'' và gửi email xác nhận. \\ \hline
+\textbf{Luồng thay thế} &
+4a. Quá thời hạn (24 giờ) chưa thanh toán: tác vụ định kỳ hủy đơn và hoàn tồn kho. \\ \hline
+\end{ucspec}
+
+\subsection{Đặc tả use case ``Hủy đơn hàng''}
+
+\begin{ucspec}{Đặc tả use case ``Hủy đơn hàng''}
+\textbf{Mã use case} & UC15 \\ \hline
+\textbf{Tên use case} & Hủy đơn hàng \\ \hline
+\textbf{Tác nhân} & Khách hàng \\ \hline
+\textbf{Mục đích} & Hủy đơn hàng khi còn được phép \\ \hline
+\textbf{Tiền điều kiện} & Đơn ở trạng thái chờ xác nhận hoặc chưa thanh toán \\ \hline
+\textbf{Hậu điều kiện} & Đơn chuyển sang trạng thái đã hủy; tồn kho được hoàn trả \\ \hline
+\textbf{Luồng sự kiện chính} &
+1. Khách chọn đơn hàng và nhấn ``Hủy đơn''. \newline
+2. Hệ thống kiểm tra điều kiện cho phép hủy. \newline
+3. Hệ thống cập nhật trạng thái và hoàn trả tồn kho. \\ \hline
+\textbf{Luồng thay thế} &
+2a. Đơn không cho phép hủy: hệ thống thông báo từ chối. \\ \hline
+\end{ucspec}
+
+\subsection{Đặc tả use case ``Xem lịch sử đơn hàng''}
+
+\begin{ucspec}{Đặc tả use case ``Xem lịch sử đơn hàng''}
+\textbf{Mã use case} & UC16 \\ \hline
+\textbf{Tên use case} & Xem lịch sử đơn hàng \\ \hline
+\textbf{Tác nhân} & Khách hàng \\ \hline
+\textbf{Mục đích} & Theo dõi các đơn hàng đã đặt và trạng thái của chúng \\ \hline
+\textbf{Tiền điều kiện} & Khách đã đăng nhập \\ \hline
+\textbf{Hậu điều kiện} & Hiển thị danh sách và chi tiết đơn hàng \\ \hline
+\textbf{Luồng sự kiện chính} &
+1. Khách vào mục ``Đơn hàng của tôi''. \newline
+2. Hệ thống hiển thị danh sách đơn theo thứ tự thời gian. \newline
+3. Khách chọn một đơn để xem chi tiết và trạng thái giao hàng. \\ \hline
+\textbf{Luồng thay thế} & --- \\ \hline
+\end{ucspec}
+
+\subsection{Đặc tả use case ``Yêu cầu đổi/trả hàng''}
+
+\begin{ucspec}{Đặc tả use case ``Yêu cầu đổi/trả hàng''}
+\textbf{Mã use case} & UC17 \\ \hline
+\textbf{Tên use case} & Yêu cầu đổi/trả hàng \\ \hline
+\textbf{Tác nhân} & Khách hàng \\ \hline
+\textbf{Mục đích} & Gửi yêu cầu đổi hoặc trả hàng cho đơn đã hoàn thành \\ \hline
+\textbf{Tiền điều kiện} & Đơn hàng ở trạng thái đã hoàn thành \\ \hline
+\textbf{Hậu điều kiện} & Yêu cầu đổi/trả được tạo, chờ quản trị xử lý \\ \hline
+\textbf{Luồng sự kiện chính} &
+1. Khách mở đơn đã hoàn thành và chọn ``Yêu cầu đổi/trả''. \newline
+2. Khách nhập lý do và gửi yêu cầu. \newline
+3. Hệ thống tạo yêu cầu ở trạng thái ``đã yêu cầu''. \\ \hline
+\textbf{Luồng thay thế} &
+1a. Đơn chưa hoàn thành: hệ thống không cho phép tạo yêu cầu. \\ \hline
+\end{ucspec}
+
+\subsection{Đặc tả use case ``Đánh giá, bình luận sản phẩm''}
+
+\begin{ucspec}{Đặc tả use case ``Đánh giá, bình luận sản phẩm''}
+\textbf{Mã use case} & UC18 \\ \hline
+\textbf{Tên use case} & Đánh giá, bình luận sản phẩm \\ \hline
+\textbf{Tác nhân} & Khách hàng \\ \hline
+\textbf{Mục đích} & Gửi đánh giá sao, nhận xét và hình ảnh về sản phẩm \\ \hline
+\textbf{Tiền điều kiện} & Khách đã đăng nhập \\ \hline
+\textbf{Hậu điều kiện} & Đánh giá được lưu ở trạng thái chờ duyệt \\ \hline
+\textbf{Luồng sự kiện chính} &
+1. Khách mở chi tiết sản phẩm, chọn tab đánh giá. \newline
+2. Khách chấm số sao, nhập nhận xét và tải tối đa 5 ảnh. \newline
+3. Hệ thống lưu đánh giá ở trạng thái ``chờ duyệt''. \newline
+4. Sau khi được quản trị duyệt, đánh giá hiển thị công khai và cập nhật điểm trung bình. \\ \hline
+\textbf{Luồng thay thế} &
+2a. Khách đã đánh giá sản phẩm trước đó: hệ thống cho phép cập nhật đánh giá cũ. \\ \hline
+\end{ucspec}
+
+Dữ liệu đầu vào của use case ``Đăng nhập'' được mô tả trong Bảng~\ref{tab:login-input}.
+
+\begin{longtable}{|c|>{\raggedright\arraybackslash}p{0.20\linewidth}|c|>{\raggedright\arraybackslash}p{0.34\linewidth}|}
+\caption{Dữ liệu đầu vào use case ``Đăng nhập''}\label{tab:login-input}\\
+\hline
+\rowcolor{gray!12}\textbf{STT} & \textbf{Trường} & \textbf{Bắt buộc} & \textbf{Điều kiện hợp lệ} \\ \hline
+\endfirsthead
+\hline
+\rowcolor{gray!12}\textbf{STT} & \textbf{Trường} & \textbf{Bắt buộc} & \textbf{Điều kiện hợp lệ} \\ \hline
+\endhead
+1 & Email & Có & Đúng định dạng email \\ \hline
+2 & Mật khẩu & Có & Không để trống \\ \hline
+\end{longtable}
+
+\subsection{Đặc tả use case ``Đăng xuất''}
+
+\begin{ucspec}{Đặc tả use case ``Đăng xuất''}
+\textbf{Mã use case} & UC03 \\ \hline
+\textbf{Tên use case} & Đăng xuất \\ \hline
+\textbf{Tác nhân} & Khách hàng \\ \hline
+\textbf{Mục đích} & Kết thúc phiên làm việc của người dùng \\ \hline
+\textbf{Tiền điều kiện} & Người dùng đang đăng nhập \\ \hline
+\textbf{Hậu điều kiện} & Phiên đăng nhập được kết thúc \\ \hline
+\textbf{Luồng sự kiện chính} &
+1. Khách chọn chức năng ``Đăng xuất''. \newline
+2. Hệ thống xóa phiên đăng nhập và chuyển về trang chủ. \\ \hline
+\textbf{Luồng thay thế} & --- \\ \hline
+\end{ucspec}
+
+\subsection{Đặc tả use case ``Xem danh sách sản phẩm''}
+
+\begin{ucspec}{Đặc tả use case ``Xem danh sách sản phẩm''}
+\textbf{Mã use case} & UC04 \\ \hline
+\textbf{Tên use case} & Xem danh sách sản phẩm \\ \hline
+\textbf{Tác nhân} & Khách hàng \\ \hline
+\textbf{Mục đích} & Duyệt danh sách sản phẩm theo danh mục \\ \hline
+\textbf{Tiền điều kiện} & Không \\ \hline
+\textbf{Hậu điều kiện} & Hiển thị danh sách sản phẩm \\ \hline
+\textbf{Luồng sự kiện chính} &
+1. Khách truy cập trang sản phẩm hoặc chọn một danh mục. \newline
+2. Hệ thống truy vấn các sản phẩm đang bán và phân trang. \newline
+3. Hệ thống hiển thị danh sách kèm hình ảnh, tên, giá và nhãn (mới/sale). \\ \hline
+\textbf{Luồng thay thế} &
+2a. Danh mục không có sản phẩm: hiển thị thông báo phù hợp. \\ \hline
+\end{ucspec}
+
+\subsection{Đặc tả use case ``Xem chi tiết sản phẩm''}
+
+\begin{ucspec}{Đặc tả use case ``Xem chi tiết sản phẩm''}
+\textbf{Mã use case} & UC07 \\ \hline
+\textbf{Tên use case} & Xem chi tiết sản phẩm \\ \hline
+\textbf{Tác nhân} & Khách hàng \\ \hline
+\textbf{Mục đích} & Xem thông tin đầy đủ của một sản phẩm \\ \hline
+\textbf{Tiền điều kiện} & Không \\ \hline
+\textbf{Hậu điều kiện} & Hiển thị chi tiết sản phẩm \\ \hline
+\textbf{Luồng sự kiện chính} &
+1. Khách chọn một sản phẩm từ danh sách. \newline
+2. Hệ thống hiển thị hình ảnh, mô tả, giá, các biến thể (kích cỡ, màu), bảng quy đổi size,
+thông số và danh sách đánh giá. \newline
+3. Hệ thống gợi ý các sản phẩm tương tự. \\ \hline
+\textbf{Luồng thay thế} &
+2a. Sản phẩm đang trong flash sale: hiển thị giá khuyến mãi và đồng hồ đếm ngược. \\ \hline
+\end{ucspec}
+
+\subsection{Đặc tả use case ``Áp dụng mã giảm giá''}
+
+\begin{ucspec}{Đặc tả use case ``Áp dụng mã giảm giá''}
+\textbf{Mã use case} & UC12 \\ \hline
+\textbf{Tên use case} & Áp dụng mã giảm giá \\ \hline
+\textbf{Tác nhân} & Khách hàng \\ \hline
+\textbf{Mục đích} & Áp dụng mã giảm giá cho đơn hàng \\ \hline
+\textbf{Tiền điều kiện} & Đang ở trang thanh toán, giỏ có sản phẩm \\ \hline
+\textbf{Hậu điều kiện} & Mã hợp lệ được áp dụng, tổng tiền được giảm tương ứng \\ \hline
+\textbf{Luồng sự kiện chính} &
+1. Khách nhập mã giảm giá và nhấn ``Áp dụng''. \newline
+2. Hệ thống kiểm tra mã: tồn tại, đang hiệu lực, đạt giá trị đơn tối thiểu, còn lượt sử dụng. \newline
+3. Hệ thống tính mức giảm và cập nhật tổng tiền tạm tính. \\ \hline
+\textbf{Luồng thay thế} &
+2a. Mã không hợp lệ/hết hạn/hết lượt: hệ thống thông báo lỗi tương ứng. \\ \hline
+\end{ucspec}
+
+\subsection{Đặc tả use case ``Quản lý thông tin cá nhân''}
+
+\begin{ucspec}{Đặc tả use case ``Quản lý thông tin cá nhân''}
+\textbf{Mã use case} & UC19 \\ \hline
+\textbf{Tên use case} & Quản lý thông tin cá nhân \\ \hline
+\textbf{Tác nhân} & Khách hàng \\ \hline
+\textbf{Mục đích} & Xem và cập nhật hồ sơ cá nhân \\ \hline
+\textbf{Tiền điều kiện} & Khách đã đăng nhập \\ \hline
+\textbf{Hậu điều kiện} & Thông tin hồ sơ được cập nhật \\ \hline
+\textbf{Luồng sự kiện chính} &
+1. Khách vào trang tài khoản. \newline
+2. Khách cập nhật họ tên, số điện thoại. \newline
+3. Hệ thống kiểm tra hợp lệ và lưu thay đổi. \\ \hline
+\textbf{Luồng thay thế} &
+3a. Dữ liệu không hợp lệ (số điện thoại sai định dạng): hệ thống báo lỗi. \\ \hline
+\end{ucspec}
+
+Dữ liệu đầu vào của use case ``Quản lý thông tin cá nhân'' được mô tả trong
+Bảng~\ref{tab:profile-input}.
+
+\begin{longtable}{|c|>{\raggedright\arraybackslash}p{0.20\linewidth}|c|>{\raggedright\arraybackslash}p{0.34\linewidth}|}
+\caption{Dữ liệu đầu vào use case ``Quản lý thông tin cá nhân''}\label{tab:profile-input}\\
+\hline
+\rowcolor{gray!12}\textbf{STT} & \textbf{Trường} & \textbf{Bắt buộc} & \textbf{Điều kiện hợp lệ} \\ \hline
+\endfirsthead
+\hline
+\rowcolor{gray!12}\textbf{STT} & \textbf{Trường} & \textbf{Bắt buộc} & \textbf{Điều kiện hợp lệ} \\ \hline
+\endhead
+1 & Họ tên & Có & Từ 2 đến 100 ký tự \\ \hline
+2 & Số điện thoại & Không & Định dạng \texttt{0} hoặc \texttt{+84} + 9 chữ số \\ \hline
+\end{longtable}
+
+\subsection{Đặc tả use case ``Quản lý địa chỉ giao hàng''}
+
+\begin{ucspec}{Đặc tả use case ``Quản lý địa chỉ giao hàng''}
+\textbf{Mã use case} & UC20 \\ \hline
+\textbf{Tên use case} & Quản lý địa chỉ giao hàng \\ \hline
+\textbf{Tác nhân} & Khách hàng \\ \hline
+\textbf{Mục đích} & Thêm, sửa, xóa và đặt mặc định địa chỉ giao hàng \\ \hline
+\textbf{Tiền điều kiện} & Khách đã đăng nhập \\ \hline
+\textbf{Hậu điều kiện} & Sổ địa chỉ được cập nhật \\ \hline
+\textbf{Luồng sự kiện chính} &
+1. Khách vào mục địa chỉ trong trang tài khoản. \newline
+2. Khách thêm/sửa địa chỉ: nhập tên người nhận, số điện thoại, tỉnh/quận/phường, địa chỉ chi
+tiết; có thể đặt làm mặc định. \newline
+3. Hệ thống kiểm tra hợp lệ và lưu địa chỉ. \\ \hline
+\textbf{Luồng thay thế} &
+3a. Dữ liệu không hợp lệ: hệ thống báo lỗi và yêu cầu sửa. \\ \hline
+\end{ucspec}
+
+Dữ liệu đầu vào của use case ``Quản lý địa chỉ giao hàng'' được mô tả trong
+Bảng~\ref{tab:address-input}.
+
+\begin{longtable}{|c|>{\raggedright\arraybackslash}p{0.24\linewidth}|c|>{\raggedright\arraybackslash}p{0.30\linewidth}|}
+\caption{Dữ liệu đầu vào use case ``Quản lý địa chỉ giao hàng''}\label{tab:address-input}\\
+\hline
+\rowcolor{gray!12}\textbf{STT} & \textbf{Trường} & \textbf{Bắt buộc} & \textbf{Điều kiện hợp lệ} \\ \hline
+\endfirsthead
+\hline
+\rowcolor{gray!12}\textbf{STT} & \textbf{Trường} & \textbf{Bắt buộc} & \textbf{Điều kiện hợp lệ} \\ \hline
+\endhead
+1 & Tên người nhận & Có & Từ 2 đến 100 ký tự \\ \hline
+2 & Số điện thoại & Có & Định dạng \texttt{0}/\texttt{+84} + 9 chữ số \\ \hline
+3 & Tỉnh/thành phố & Có & Chọn từ danh sách \\ \hline
+4 & Quận/huyện & Có & Chọn từ danh sách \\ \hline
+5 & Phường/xã & Có & Chọn từ danh sách \\ \hline
+6 & Địa chỉ chi tiết & Có & Từ 5 đến 255 ký tự \\ \hline
+7 & Đặt làm mặc định & Không & Đúng/Sai \\ \hline
+\end{longtable}
+
+\section{Đặc tả chi tiết các ca sử dụng của Quản trị viên}
+
+\subsection{Đặc tả use case ``Quản lý sản phẩm''}
+
+\begin{ucspec}{Đặc tả use case ``Quản lý sản phẩm''}
+\textbf{Mã use case} & UC23 \\ \hline
+\textbf{Tên use case} & Quản lý sản phẩm \& biến thể \\ \hline
+\textbf{Tác nhân} & Quản trị viên \\ \hline
+\textbf{Mục đích} & Thêm, sửa, xóa sản phẩm cùng biến thể và hình ảnh \\ \hline
+\textbf{Tiền điều kiện} & Quản trị viên đã đăng nhập \\ \hline
+\textbf{Hậu điều kiện} & Dữ liệu sản phẩm được cập nhật \\ \hline
+\textbf{Luồng sự kiện chính} &
+1. Quản trị viên vào trang quản lý sản phẩm. \newline
+2. Chọn thêm mới hoặc chỉnh sửa một sản phẩm. \newline
+3. Nhập thông tin, tải hình ảnh và khai báo biến thể (kích cỡ, màu, SKU, tồn kho). \newline
+4. Hệ thống kiểm tra hợp lệ và lưu vào cơ sở dữ liệu. \\ \hline
+\textbf{Luồng thay thế} &
+4a. Dữ liệu không hợp lệ: hệ thống báo lỗi và yêu cầu sửa lại. \\ \hline
+\end{ucspec}
+
+\subsection{Đặc tả use case ``Quản lý đơn hàng''}
+
+\begin{ucspec}{Đặc tả use case ``Quản lý đơn hàng''}
+\textbf{Mã use case} & UC25 \\ \hline
+\textbf{Tên use case} & Quản lý đơn hàng \\ \hline
+\textbf{Tác nhân} & Quản trị viên \\ \hline
+\textbf{Mục đích} & Xác nhận và cập nhật trạng thái xử lý đơn hàng \\ \hline
+\textbf{Tiền điều kiện} & Quản trị viên đã đăng nhập \\ \hline
+\textbf{Hậu điều kiện} & Trạng thái đơn hàng được cập nhật \\ \hline
+\textbf{Luồng sự kiện chính} &
+1. Quản trị viên xem danh sách đơn hàng. \newline
+2. Chọn một đơn để xem chi tiết. \newline
+3. Cập nhật trạng thái (xác nhận, đóng gói, giao hàng, hoàn thành) và nhập mã vận đơn. \newline
+4. Hệ thống lưu thay đổi và gửi email thông báo cho khách. \newline
+5. Quản trị viên có thể in phiếu giao hàng. \\ \hline
+\textbf{Luồng thay thế} &
+3a. Hủy đơn: hệ thống hoàn trả tồn kho cho đơn bị hủy. \\ \hline
+\end{ucspec}
+
+\subsection{Đặc tả use case ``Quản lý mã giảm giá''}
+
+\begin{ucspec}{Đặc tả use case ``Quản lý mã giảm giá''}
+\textbf{Mã use case} & UC27 \\ \hline
+\textbf{Tên use case} & Quản lý mã giảm giá \\ \hline
+\textbf{Tác nhân} & Quản trị viên \\ \hline
+\textbf{Mục đích} & Tạo và quản lý các mã giảm giá (voucher) \\ \hline
+\textbf{Tiền điều kiện} & Quản trị viên đã đăng nhập \\ \hline
+\textbf{Hậu điều kiện} & Voucher được tạo/cập nhật \\ \hline
+\textbf{Luồng sự kiện chính} &
+1. Quản trị viên vào trang quản lý mã giảm giá. \newline
+2. Tạo mã mới: nhập mã, loại giảm (\% hoặc số tiền), giá trị, điều kiện đơn tối thiểu, giới hạn
+sử dụng, thời gian hiệu lực. \newline
+3. Hệ thống kiểm tra trùng mã và lưu voucher. \\ \hline
+\textbf{Luồng thay thế} &
+3a. Mã đã tồn tại: hệ thống thông báo lỗi. \\ \hline
+\end{ucspec}
+
+\subsection{Đặc tả use case ``Kiểm duyệt đánh giá''}
+
+\begin{ucspec}{Đặc tả use case ``Kiểm duyệt đánh giá''}
+\textbf{Mã use case} & UC31 \\ \hline
+\textbf{Tên use case} & Kiểm duyệt đánh giá \\ \hline
+\textbf{Tác nhân} & Quản trị viên \\ \hline
+\textbf{Mục đích} & Duyệt, từ chối hoặc phản hồi các đánh giá của khách hàng \\ \hline
+\textbf{Tiền điều kiện} & Có đánh giá đang ở trạng thái chờ duyệt \\ \hline
+\textbf{Hậu điều kiện} & Trạng thái đánh giá được cập nhật; điểm trung bình sản phẩm được tính lại \\ \hline
+\textbf{Luồng sự kiện chính} &
+1. Quản trị viên vào trang kiểm duyệt đánh giá. \newline
+2. Xem nội dung, hình ảnh đánh giá. \newline
+3. Chọn duyệt / từ chối / phản hồi / xóa. \newline
+4. Hệ thống cập nhật trạng thái và tính lại điểm trung bình của sản phẩm. \\ \hline
+\textbf{Luồng thay thế} & --- \\ \hline
+\end{ucspec}
+
+\subsection{Đặc tả use case ``Thống kê báo cáo doanh thu''}
+
+\begin{ucspec}{Đặc tả use case ``Thống kê báo cáo doanh thu''}
+\textbf{Mã use case} & UC32 \\ \hline
+\textbf{Tên use case} & Thống kê, báo cáo doanh thu \\ \hline
+\textbf{Tác nhân} & Quản trị viên \\ \hline
+\textbf{Mục đích} & Theo dõi doanh thu và các chỉ số kinh doanh \\ \hline
+\textbf{Tiền điều kiện} & Quản trị viên đã đăng nhập \\ \hline
+\textbf{Hậu điều kiện} & Hiển thị báo cáo; có thể xuất tệp Excel \\ \hline
+\textbf{Luồng sự kiện chính} &
+1. Quản trị viên vào trang báo cáo. \newline
+2. Hệ thống tổng hợp doanh thu theo ngày, sản phẩm bán chạy, khách hàng và các chỉ số khác. \newline
+3. Hệ thống hiển thị biểu đồ và bảng số liệu. \newline
+4. Quản trị viên xuất báo cáo ra tệp Excel khi cần. \\ \hline
+\textbf{Luồng thay thế} & --- \\ \hline
+\end{ucspec}
+
+Dữ liệu đầu vào của use case ``Quản lý mã giảm giá'' được mô tả trong Bảng~\ref{tab:voucher-input}
+(theo lược đồ kiểm tra dữ liệu thực tế của hệ thống).
+
+\begin{longtable}{|c|>{\raggedright\arraybackslash}p{0.24\linewidth}|c|>{\raggedright\arraybackslash}p{0.34\linewidth}|}
+\caption{Dữ liệu đầu vào use case ``Quản lý mã giảm giá''}\label{tab:voucher-input}\\
+\hline
+\rowcolor{gray!12}\textbf{STT} & \textbf{Trường} & \textbf{Bắt buộc} & \textbf{Điều kiện hợp lệ} \\ \hline
+\endfirsthead
+\hline
+\rowcolor{gray!12}\textbf{STT} & \textbf{Trường} & \textbf{Bắt buộc} & \textbf{Điều kiện hợp lệ} \\ \hline
+\endhead
+1 & Mã giảm giá & Có & 3--30 ký tự, chỉ chữ HOA, số, gạch ngang/dưới \\ \hline
+2 & Mô tả & Không & Tối đa 200 ký tự \\ \hline
+3 & Loại giảm & Có & PERCENT hoặc FIXED \\ \hline
+4 & Giá trị giảm & Có & Số nguyên dương; nếu \% phải từ 1--100 \\ \hline
+5 & Đơn tối thiểu & Không & Số nguyên không âm \\ \hline
+6 & Giảm tối đa & Không & Số nguyên dương \\ \hline
+7 & Giới hạn lượt dùng & Không & Số nguyên dương \\ \hline
+8 & Giới hạn theo người dùng & Không & Số nguyên dương \\ \hline
+9 & Thời gian hiệu lực & Có & Ngày kết thúc phải sau ngày bắt đầu \\ \hline
+\end{longtable}
+
+\subsection{Đặc tả use case ``Đăng nhập quản trị''}
+
+\begin{ucspec}{Đặc tả use case ``Đăng nhập quản trị''}
+\textbf{Mã use case} & UC21 \\ \hline
+\textbf{Tên use case} & Đăng nhập quản trị \\ \hline
+\textbf{Tác nhân} & Quản trị viên \\ \hline
+\textbf{Mục đích} & Truy cập khu vực quản trị với quyền quản trị \\ \hline
+\textbf{Tiền điều kiện} & Tài khoản có vai trò ADMIN \\ \hline
+\textbf{Hậu điều kiện} & Quản trị viên truy cập được trang quản trị \\ \hline
+\textbf{Luồng sự kiện chính} &
+1. Quản trị viên đăng nhập bằng email và mật khẩu. \newline
+2. Hệ thống xác thực và kiểm tra vai trò người dùng. \newline
+3. Nếu là ADMIN, cho phép truy cập khu vực quản trị. \\ \hline
+\textbf{Luồng thay thế} &
+3a. Tài khoản không phải ADMIN: từ chối truy cập khu vực quản trị. \\ \hline
+\end{ucspec}
+
+\subsection{Đặc tả use case ``Quản lý danh mục sản phẩm''}
+
+\begin{ucspec}{Đặc tả use case ``Quản lý danh mục sản phẩm''}
+\textbf{Mã use case} & UC22 \\ \hline
+\textbf{Tên use case} & Quản lý danh mục sản phẩm \\ \hline
+\textbf{Tác nhân} & Quản trị viên \\ \hline
+\textbf{Mục đích} & Thêm, sửa, xóa danh mục sản phẩm (có phân cấp cha--con) \\ \hline
+\textbf{Tiền điều kiện} & Quản trị viên đã đăng nhập \\ \hline
+\textbf{Hậu điều kiện} & Cây danh mục được cập nhật \\ \hline
+\textbf{Luồng sự kiện chính} &
+1. Quản trị viên vào trang quản lý danh mục. \newline
+2. Thêm/sửa danh mục: nhập tên, đường dẫn (slug), chọn danh mục cha, thứ tự hiển thị. \newline
+3. Hệ thống kiểm tra trùng slug và lưu danh mục. \\ \hline
+\textbf{Luồng thay thế} &
+3a. Slug đã tồn tại: hệ thống thông báo lỗi. \\ \hline
+\end{ucspec}
+
+\subsection{Đặc tả use case ``Quản lý tồn kho''}
+
+\begin{ucspec}{Đặc tả use case ``Quản lý tồn kho''}
+\textbf{Mã use case} & UC24 \\ \hline
+\textbf{Tên use case} & Quản lý tồn kho \\ \hline
+\textbf{Tác nhân} & Quản trị viên \\ \hline
+\textbf{Mục đích} & Điều chỉnh và theo dõi tồn kho của các biến thể \\ \hline
+\textbf{Tiền điều kiện} & Quản trị viên đã đăng nhập \\ \hline
+\textbf{Hậu điều kiện} & Tồn kho được cập nhật; thay đổi được ghi nhật ký \\ \hline
+\textbf{Luồng sự kiện chính} &
+1. Quản trị viên vào trang quản lý tồn kho. \newline
+2. Điều chỉnh số lượng tồn của một biến thể (nhập thêm/bớt) kèm lý do. \newline
+3. Hệ thống cập nhật tồn kho và ghi một bản ghi vào nhật ký tồn kho. \\ \hline
+\textbf{Luồng thay thế} & --- \\ \hline
+\end{ucspec}
+
+\subsection{Đặc tả use case ``Xử lý đổi/trả hàng''}
+
+\begin{ucspec}{Đặc tả use case ``Xử lý đổi/trả hàng''}
+\textbf{Mã use case} & UC26 \\ \hline
+\textbf{Tên use case} & Xử lý đổi/trả hàng \\ \hline
+\textbf{Tác nhân} & Quản trị viên \\ \hline
+\textbf{Mục đích} & Duyệt, từ chối hoặc hoàn tiền cho yêu cầu đổi/trả \\ \hline
+\textbf{Tiền điều kiện} & Có yêu cầu đổi/trả đang chờ xử lý \\ \hline
+\textbf{Hậu điều kiện} & Trạng thái yêu cầu được cập nhật \\ \hline
+\textbf{Luồng sự kiện chính} &
+1. Quản trị viên xem danh sách yêu cầu đổi/trả. \newline
+2. Chọn một yêu cầu để xem chi tiết. \newline
+3. Duyệt, từ chối hoặc xác nhận hoàn tiền. \newline
+4. Khi hoàn tiền: hệ thống hoàn trả tồn kho và đánh dấu đơn ``đã hoàn tiền''. \\ \hline
+\textbf{Luồng thay thế} &
+3a. Từ chối: cập nhật trạng thái từ chối kèm ghi chú. \\ \hline
+\end{ucspec}
+
+\subsection{Đặc tả use case ``Quản lý flash sale''}
+
+\begin{ucspec}{Đặc tả use case ``Quản lý flash sale''}
+\textbf{Mã use case} & UC28 \\ \hline
+\textbf{Tên use case} & Quản lý flash sale \\ \hline
+\textbf{Tác nhân} & Quản trị viên \\ \hline
+\textbf{Mục đích} & Tạo và quản lý chương trình giảm giá theo thời gian \\ \hline
+\textbf{Tiền điều kiện} & Quản trị viên đã đăng nhập \\ \hline
+\textbf{Hậu điều kiện} & Chương trình flash sale được tạo/cập nhật \\ \hline
+\textbf{Luồng sự kiện chính} &
+1. Quản trị viên vào trang quản lý flash sale. \newline
+2. Tạo chương trình: đặt tên, thời gian bắt đầu/kết thúc, chọn sản phẩm và giá khuyến mãi. \newline
+3. Hệ thống lưu chương trình; giá khuyến mãi tự áp dụng khi chương trình đang hiệu lực. \\ \hline
+\textbf{Luồng thay thế} & --- \\ \hline
+\end{ucspec}
+
+\subsection{Đặc tả use case ``Quản lý banner và nội dung''}
+
+\begin{ucspec}{Đặc tả use case ``Quản lý banner và nội dung''}
+\textbf{Mã use case} & UC29 \\ \hline
+\textbf{Tên use case} & Quản lý banner và nội dung \\ \hline
+\textbf{Tác nhân} & Quản trị viên \\ \hline
+\textbf{Mục đích} & Quản lý các banner quảng cáo hiển thị trên trang chủ \\ \hline
+\textbf{Tiền điều kiện} & Quản trị viên đã đăng nhập \\ \hline
+\textbf{Hậu điều kiện} & Danh sách và thứ tự banner được cập nhật \\ \hline
+\textbf{Luồng sự kiện chính} &
+1. Quản trị viên vào trang quản lý banner. \newline
+2. Thêm/sửa banner: nhập tiêu đề, ảnh, liên kết, trạng thái hiển thị. \newline
+3. Sắp xếp thứ tự banner bằng thao tác kéo thả. \newline
+4. Hệ thống lưu và phản ánh ngay trên trang chủ. \\ \hline
+\textbf{Luồng thay thế} & --- \\ \hline
+\end{ucspec}
+
+\subsection{Đặc tả use case ``Quản lý tài khoản khách hàng''}
+
+\begin{ucspec}{Đặc tả use case ``Quản lý tài khoản khách hàng''}
+\textbf{Mã use case} & UC30 \\ \hline
+\textbf{Tên use case} & Quản lý tài khoản khách hàng \\ \hline
+\textbf{Tác nhân} & Quản trị viên \\ \hline
+\textbf{Mục đích} & Xem danh sách và thông tin chi tiết khách hàng \\ \hline
+\textbf{Tiền điều kiện} & Quản trị viên đã đăng nhập \\ \hline
+\textbf{Hậu điều kiện} & Hiển thị thông tin khách hàng \\ \hline
+\textbf{Luồng sự kiện chính} &
+1. Quản trị viên vào trang quản lý khách hàng. \newline
+2. Tìm kiếm và xem danh sách khách hàng. \newline
+3. Chọn một khách hàng để xem chi tiết (thông tin, lịch sử đơn hàng). \\ \hline
+\textbf{Luồng thay thế} & --- \\ \hline
+\end{ucspec}
+
+\section{Yêu cầu phi chức năng}
+
+\subsection{Yêu cầu về bảo mật}
+\begin{itemize}
+  \item Mật khẩu người dùng được quản lý và mã hóa bởi dịch vụ xác thực Supabase Auth.
+  \item Mọi dữ liệu đầu vào được kiểm tra và làm sạch ở phía máy chủ bằng lược đồ Zod.
+  \item Phân quyền truy cập: chỉ quản trị viên mới truy cập được khu vực quản trị; áp dụng thêm
+  Row-Level Security ở tầng cơ sở dữ liệu.
+  \item Webhook thanh toán được xác thực bằng chữ ký HMAC; giới hạn tần suất truy cập (rate
+  limit) cho các thao tác nhạy cảm.
+\end{itemize}
+
+\subsection{Yêu cầu về hiệu năng}
+\begin{itemize}
+  \item Trang sản phẩm và trang chủ được tối ưu bằng React Server Components và bộ nhớ đệm
+  (caching) để có thời gian phản hồi nhanh.
+  \item Truy vấn cơ sở dữ liệu được tối ưu bằng chỉ mục (index) trên các cột truy vấn thường xuyên.
+\end{itemize}
+
+\subsection{Yêu cầu về khả năng bảo trì}
+\begin{itemize}
+  \item Mã nguồn viết bằng TypeScript, tổ chức theo tầng (giao diện, nghiệp vụ, truy vấn dữ liệu).
+  \item Logic kiểm tra dữ liệu được tập trung và tái sử dụng; có bộ kiểm thử tự động.
+\end{itemize}
+
+\subsection{Yêu cầu về khả năng mở rộng}
+\begin{itemize}
+  \item Kiến trúc cho phép bổ sung danh mục, sản phẩm và tính năng mới mà không ảnh hưởng lớn
+  tới hệ thống hiện có.
+  \item Triển khai serverless trên Vercel cho phép co giãn theo lưu lượng.
+\end{itemize}
+
+\subsection{Yêu cầu về tính khả dụng và giao diện}
+\begin{itemize}
+  \item Giao diện thân thiện, hiển thị tốt trên cả máy tính và thiết bị di động (responsive).
+  \item Thông báo lỗi rõ ràng, dẫn dắt người dùng hoàn thành thao tác.
+\end{itemize}
+
+\subsection{Yêu cầu về cơ sở dữ liệu}
+\begin{itemize}
+  \item Dữ liệu được lưu trữ nhất quán trên PostgreSQL; các nghiệp vụ nhạy cảm (đặt hàng, trừ
+  kho, áp dụng voucher) được thực hiện trong giao dịch để bảo đảm toàn vẹn.
+  \item Giá trị tiền tệ được lưu dưới dạng số nguyên (đồng) để tránh sai số dấu phẩy động.
+\end{itemize}
+
+\subsection{Ma trận phân quyền}
+
+Bảng~\ref{tab:rbac} tóm tắt quyền truy cập của từng nhóm chức năng theo vai trò người dùng.
+
+\begin{longtable}{|>{\raggedright\arraybackslash}p{0.46\linewidth}|c|c|}
+\caption{Ma trận phân quyền người dùng}\label{tab:rbac}\\
+\hline
+\rowcolor{gray!12}\textbf{Chức năng} & \textbf{Khách hàng} & \textbf{Quản trị viên} \\ \hline
+\endfirsthead
+\hline
+\rowcolor{gray!12}\textbf{Chức năng} & \textbf{Khách hàng} & \textbf{Quản trị viên} \\ \hline
+\endhead
+Duyệt, tìm kiếm, xem sản phẩm & \checkmark & \checkmark \\ \hline
+Giỏ hàng, yêu thích, so sánh & \checkmark & \\ \hline
+Đặt hàng, thanh toán, đổi/trả & \checkmark & \\ \hline
+Đánh giá sản phẩm & \checkmark & \\ \hline
+Quản lý sản phẩm, danh mục, kho & & \checkmark \\ \hline
+Quản lý đơn hàng & & \checkmark \\ \hline
+Quản lý khuyến mãi, banner & & \checkmark \\ \hline
+Kiểm duyệt đánh giá & & \checkmark \\ \hline
+Quản lý khách hàng & & \checkmark \\ \hline
+Thống kê, báo cáo & & \checkmark \\ \hline
+\end{longtable}

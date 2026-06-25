@@ -1,0 +1,28 @@
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontName "Be Vietnam Pro"
+skinparam defaultFontSize 13
+start
+:Quản trị viên đăng nhập;
+:Vào trang quản lý sản phẩm;
+if (Thao tác?) then (Thêm mới)
+  :Nhập thông tin sản phẩm\n(tên, danh mục, giá, mô tả...);
+  :Tải lên hình ảnh sản phẩm;
+  :Khai báo biến thể\n(kích cỡ, màu sắc, SKU, tồn kho);
+else (Cập nhật)
+  :Chọn sản phẩm cần sửa;
+  :Chỉnh sửa thông tin / biến thể;
+endif
+:Hệ thống kiểm tra hợp lệ dữ liệu;
+if (Dữ liệu hợp lệ?) then (không)
+  :Thông báo lỗi nhập liệu;
+  stop
+else (có)
+endif
+:Lưu sản phẩm vào CSDL;
+:Ghi nhật ký thay đổi tồn kho\n(nếu có điều chỉnh kho);
+:Cập nhật hiển thị trên website;
+stop
+@enduml

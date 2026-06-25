@@ -1,0 +1,28 @@
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontName "Be Vietnam Pro"
+skinparam defaultFontSize 13
+start
+:Khách hàng mở đơn hàng\nđã hoàn thành;
+:Gửi yêu cầu đổi / trả\n(kèm lý do);
+:Hệ thống tạo yêu cầu\n(trạng thái Đã yêu cầu);
+:Quản trị viên xem yêu cầu\ntại trang Đổi/Trả;
+if (Quyết định?) then (Từ chối)
+  :Cập nhật trạng thái Từ chối,\nghi chú lý do;
+  :Thông báo cho khách hàng;
+  stop
+else (Chấp nhận)
+  :Cập nhật trạng thái Đã duyệt;
+endif
+if (Hoàn tiền?) then (có)
+  :Xác nhận hoàn tiền;
+  :Hoàn trả tồn kho;
+  :Cập nhật đơn hàng:\ntrạng thái thanh toán = Đã hoàn tiền;
+else (không)
+endif
+:Cập nhật trạng thái\nyêu cầu = Đã hoàn tất;
+:Thông báo cho khách hàng;
+stop
+@enduml

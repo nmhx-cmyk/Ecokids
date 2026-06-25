@@ -1,0 +1,38 @@
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontName "Be Vietnam Pro"
+skinparam defaultFontSize 13
+left to right direction
+
+actor "Khách hàng" as KH
+actor "Quản trị viên" as QTV
+
+rectangle "Hệ thống Ecokids" {
+  usecase "Đăng ký / Đăng nhập" as U1
+  usecase "Duyệt, tìm kiếm,\nlọc sản phẩm" as U2
+  usecase "Quản lý giỏ hàng &\ndanh sách yêu thích" as U3
+  usecase "Đặt hàng &\nthanh toán" as U4
+  usecase "Theo dõi đơn hàng &\nđổi trả" as U5
+  usecase "Đánh giá sản phẩm" as U6
+  usecase "Quản lý sản phẩm,\ndanh mục, kho" as A1
+  usecase "Quản lý đơn hàng &\nđổi trả" as A2
+  usecase "Quản lý khuyến mãi &\nnội dung" as A3
+  usecase "Quản lý khách hàng &\nkiểm duyệt đánh giá" as A4
+  usecase "Thống kê &\nbáo cáo doanh thu" as A5
+}
+
+KH --> U1
+KH --> U2
+KH --> U3
+KH --> U4
+KH --> U5
+KH --> U6
+
+QTV --> A1
+QTV --> A2
+QTV --> A3
+QTV --> A4
+QTV --> A5
+@enduml

@@ -1,0 +1,40 @@
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontName "Be Vietnam Pro"
+skinparam defaultFontSize 13
+actor "Người dùng" as User
+
+rectangle "Tầng trình diễn (Presentation)\n— Trình duyệt" as L1 {
+  component "React Client Components\n(Tailwind CSS, Zustand)" as UI
+}
+
+rectangle "Tầng ứng dụng / nghiệp vụ (Application)\n— Next.js trên Vercel" as L2 {
+  component "App Router\n(React Server Components)" as RSC
+  component "Server Actions\n(xử lý nghiệp vụ)" as SA
+  component "Route Handlers / API\n(webhook, upload, search)" as API
+  component "Cron job\n(hủy đơn quá hạn)" as CRON
+}
+
+rectangle "Tầng dữ liệu & dịch vụ (Data & Services)" as L3 {
+  database "PostgreSQL\n(Supabase)" as DB
+  component "Supabase Auth\n& Storage" as SB
+  cloud "PayOS" as PAYOS
+  cloud "Resend\n(email)" as RESEND
+  cloud "Upstash\n(rate limit)" as REDIS
+}
+
+User --> UI
+UI --> RSC : HTTP
+UI --> SA : gọi hàm máy chủ
+RSC --> DB : Prisma ORM
+SA --> DB : Prisma ORM (giao dịch)
+SA --> PAYOS : tạo liên kết thanh toán
+SA --> RESEND : gửi email
+API --> DB
+API --> PAYOS : nhận webhook
+SA --> SB : xác thực / lưu ảnh
+SA --> REDIS : giới hạn truy cập
+CRON --> DB
+@enduml

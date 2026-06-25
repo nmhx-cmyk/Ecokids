@@ -16,6 +16,7 @@
     "db:migrate": "dotenv -e .env.local -- prisma migrate dev",
     "db:migrate:deploy": "dotenv -e .env.local -- prisma migrate deploy",
     "db:seed": "dotenv -e .env.local -- tsx prisma/seed.ts",
+    "db:refresh-images": "dotenv -e .env.local -- tsx prisma/refresh-images.ts",
     "db:studio": "dotenv -e .env.local -- prisma studio",
     "db:reset": "dotenv -e .env.local -- prisma migrate reset",
     "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",

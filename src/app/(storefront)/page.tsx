@@ -2,7 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ShieldCheck, Truck, Undo2 } from "lucide-react";
 import { Badge, Button } from "@/components/ui";
-import { BannerCarousel } from "@/components/storefront/BannerCarousel";
 import { FlashCountdown } from "@/components/storefront/FlashCountdown";
 import { ProductGrid } from "@/components/storefront/ProductGrid";
 import {
@@ -10,7 +9,6 @@ import {
   getFeaturedCategories,
   getNewArrivals,
 } from "@/lib/queries/storefront";
-import { getActiveBanners } from "@/lib/queries/banners";
 import {
   getActiveFlashSaleProducts,
   getNearestFlashSaleEnd,
@@ -22,26 +20,17 @@ import {
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const [
-    featuredCategories,
-    bestSellers,
-    newArrivals,
-    banners,
-    flashProducts,
-    flashEndsAt,
-  ] = await Promise.all([
-    getFeaturedCategories(4),
-    getBestSellers(8),
-    getNewArrivals(8),
-    getActiveBanners(),
-    getActiveFlashSaleProducts(8),
-    getNearestFlashSaleEnd(),
-  ]);
+  const [featuredCategories, bestSellers, newArrivals, flashProducts, flashEndsAt] =
+    await Promise.all([
+      getFeaturedCategories(4),
+      getBestSellers(8),
+      getNewArrivals(8),
+      getActiveFlashSaleProducts(8),
+      getNearestFlashSaleEnd(),
+    ]);
 
   return (
     <>
-      <BannerCarousel banners={banners} />
-
       {/* Section 1 — Hero */}
       <section className="mx-4 mt-4 rounded-3xl bg-cream-100 px-6 py-10 sm:px-10 lg:mx-8 lg:mt-8 lg:px-16 lg:py-16">
         <div className="grid items-center gap-10 lg:grid-cols-2">
@@ -72,7 +61,7 @@ export default async function HomePage() {
           </div>
           <div className="relative aspect-[4/5] overflow-hidden rounded-2xl lg:aspect-[4/3]">
             <Image
-              src="https://picsum.photos/seed/ecokids-hero/900/720.webp"
+              src="https://images.unsplash.com/photo-1555529771-835f59fc5efe?auto=format&fit=crop&w=900&h=720&q=80"
               alt="Ảnh trẻ em với trang phục Ecokids"
               fill
               priority

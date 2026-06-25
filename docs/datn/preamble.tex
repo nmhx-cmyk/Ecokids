@@ -1,0 +1,186 @@
+% ============================================================
+% preamble.tex — HUST graduation thesis style (XeLaTeX, Vietnamese)
+% Compile with: latexmk -xelatex main.tex
+% ============================================================
+
+% ---- Fonts (Times-compatible, full Vietnamese coverage) ----
+\usepackage{fontspec}
+\defaultfontfeatures{Ligatures=TeX}
+% Load TeX Gyre fonts by filename from the texmf tree (not registered in fontconfig)
+\setmainfont{texgyretermes}[              % Times New Roman metric clone
+  Extension      = .otf,
+  UprightFont    = *-regular,
+  BoldFont       = *-bold,
+  ItalicFont     = *-italic,
+  BoldItalicFont = *-bolditalic ]
+\setsansfont{texgyreheros}[               % Helvetica/Arial clone
+  Extension      = .otf,
+  UprightFont    = *-regular,
+  BoldFont       = *-bold,
+  ItalicFont     = *-italic,
+  BoldItalicFont = *-bolditalic ]
+\setmonofont{texgyrecursor}[
+  Extension      = .otf,
+  UprightFont    = *-regular,
+  BoldFont       = *-bold,
+  ItalicFont     = *-italic,
+  BoldItalicFont = *-bolditalic,
+  Scale          = 0.92 ]
+% Proper Vietnamese line breaking without babel/polyglossia shorthand clashes
+\XeTeXlinebreaklocale "vi"
+\XeTeXlinebreakskip = 0pt plus 1pt
+
+% ---- Base font size 13pt (HUST standard; report class only allows 10/11/12pt,
+%      so use the fontsize package to set an exact 13pt and rescale all sizes) ----
+\usepackage[fontsize=13pt]{fontsize}
+
+% ---- Page geometry (HUST: left 3cm, others 2cm) ----
+\usepackage[a4paper,left=3cm,right=2cm,top=2cm,bottom=2cm]{geometry}
+
+% ---- Line spacing 1.5 ----
+\usepackage{setspace}
+\onehalfspacing
+
+% ---- Core packages ----
+\usepackage{graphicx}
+\usepackage[table]{xcolor}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{ragged2e}
+\setlist{nosep,leftmargin=1.4em}
+
+% ---- Justified text, no orphan/widow ----
+\widowpenalty=10000
+\clubpenalty=10000
+\sloppy
+
+% ---- Caption format: "Hình X.Y: ..." / "Bảng X.Y: ..." ----
+\usepackage{caption}
+\captionsetup{labelsep=colon,font=normalsize,labelfont=bf,justification=centering}
+\captionsetup[table]{position=below,skip=4pt}
+\captionsetup[figure]{position=below,skip=4pt}
+
+% Numbering per chapter (report already does X.Y; make explicit)
+\usepackage{chngcntr}
+\counterwithin{figure}{chapter}
+\counterwithin{table}{chapter}
+
+% ---- Vietnamese caption/section names (no language package needed) ----
+\renewcommand{\contentsname}{Mục lục}
+\renewcommand{\listfigurename}{Danh mục hình vẽ}
+\renewcommand{\listtablename}{Danh mục bảng}
+\renewcommand{\bibname}{Tài liệu tham khảo}
+\renewcommand{\chaptername}{Chương}
+\renewcommand{\figurename}{Hình}
+\renewcommand{\tablename}{Bảng}
+\renewcommand{\appendixname}{Phụ lục}
+
+% ---- Chapter / section title formatting ----
+\usepackage{titlesec}
+\titleformat{\chapter}[display]
+  {\normalfont\Large\bfseries\centering}
+  {\chaptertitlename\ \thechapter}{4pt}{\Large}
+\titlespacing*{\chapter}{0pt}{6pt}{18pt}
+\titleformat{\section}
+  {\normalfont\large\bfseries}{\thesection}{0.6em}{}
+\titleformat{\subsection}
+  {\normalfont\normalsize\bfseries}{\thesubsection}{0.6em}{}
+\titleformat{\subsubsection}
+  {\normalfont\normalsize\bfseries\itshape}{\thesubsubsection}{0.6em}{}
+
+% Section depth & ToC depth (show subsections in ToC like the sample)
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{2}
+
+% ---- Table of contents dotted leaders for chapters too ----
+\usepackage{titletoc}
+\usepackage[titles]{tocloft}
+\renewcommand{\cftchapleader}{\cftdotfill{\cftdotsep}}
+\renewcommand{\cftchapfont}{\bfseries}
+\renewcommand{\cftchappagefont}{\bfseries}
+\setlength{\cftbeforechapskip}{4pt}
+
+% ---- Header/footer: page number bottom-center ----
+\usepackage{fancyhdr}
+\fancypagestyle{plain}{%
+  \fancyhf{}%
+  \fancyfoot[C]{\thepage}%
+  \renewcommand{\headrulewidth}{0pt}%
+}
+\pagestyle{plain}
+
+% ---- Hyperlinks (black, print-friendly) ----
+\usepackage[hidelinks,unicode]{hyperref}
+\hypersetup{
+  pdftitle={Do an tot nghiep - Ecokids},
+  pdfauthor={Ecokids},
+  bookmarksnumbered=true,
+}
+
+% ============================================================
+% Helper macros
+% ============================================================
+
+% Placeholder for missing personal info — visibly flagged, easy to grep
+\newcommand{\TODO}[1]{\textbf{\color{red}[CHƯA CÓ — #1]}}
+
+% Figure include helper (centered, width-controlled)
+\newcommand{\fig}[3]{% {file}{width}{caption+label inside}
+  \begin{figure}[H]\centering
+  \includegraphics[width=#2\linewidth]{#1}
+  #3
+  \end{figure}}
+
+% Screenshot helper: show the image if present, else a labelled placeholder box.
+% Usage: \screenshot{figures/screenshots/home.png}{0.85}{Giao diện trang chủ}{fig:home}
+\newcommand{\screenshot}[4]{%
+  \begin{figure}[H]\centering
+  \IfFileExists{#1}
+    {\fbox{\includegraphics[width=#2\linewidth,height=0.62\textheight,keepaspectratio]{#1}}}
+    {\fbox{\parbox[c][5cm][c]{#2\linewidth}{\centering \TODO{ảnh: #1}}}}%
+  \caption{#3}\label{#4}
+  \end{figure}}
+
+% --- Use-case specification table ---------------------------------
+% Two-column "field : value" rows that may span pages (longtable).
+\newenvironment{ucspec}[1]% #1 = caption text
+{%
+  \par\vspace{4pt}
+  \footnotesize
+  \setlength{\extrarowheight}{2pt}
+  \def\uccaption{#1}%
+  \begin{longtable}{|>{\raggedright\arraybackslash}p{0.26\linewidth}|>{\raggedright\arraybackslash}p{0.66\linewidth}|}
+  \hline
+}
+{%
+  \hline
+  \caption{\uccaption}\\
+  \end{longtable}
+  \normalsize
+}
+% A simple field/value row
+\newcommand{\ucrow}[2]{\textbf{#1} & #2 \\ \hline}
+
+% --- DB design table (STT | Tên trường | Kiểu | Ràng buộc | Extra) ---
+\newenvironment{dbtable}[1]% #1 = caption text
+{%
+  \par\vspace{4pt}\footnotesize
+  \setlength{\extrarowheight}{2pt}
+  \def\dbcaption{#1}%
+  \begin{longtable}{|c|>{\raggedright\arraybackslash}p{0.22\linewidth}|>{\raggedright\arraybackslash}p{0.20\linewidth}|>{\raggedright\arraybackslash}p{0.16\linewidth}|>{\raggedright\arraybackslash}p{0.24\linewidth}|}
+  \hline
+  \rowcolor{gray!12}\textbf{STT} & \textbf{Tên trường} & \textbf{Kiểu dữ liệu} & \textbf{Ràng buộc} & \textbf{Extra} \\ \hline
+  \endhead
+}
+{%
+  \caption{\dbcaption}\\
+  \end{longtable}
+  \normalsize
+}
